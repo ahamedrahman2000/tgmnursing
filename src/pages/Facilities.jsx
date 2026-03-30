@@ -1,5 +1,4 @@
-import React from "react";
-
+ 
 const facilitiesData = [
   { icon: "💧", label: "R.O Water" },
   { icon: "🎥", label: "CCTV" },

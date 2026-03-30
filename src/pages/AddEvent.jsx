@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import   { useState } from "react";
 
 const AddEvents = () => {
   const [title, setTitle] = useState("");

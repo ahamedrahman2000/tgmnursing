@@ -1,5 +1,4 @@
-import React from "react";
-
+ 
 const CourseCard = ({ title, duration, image, onClick }) => (
   <div
     onClick={onClick}

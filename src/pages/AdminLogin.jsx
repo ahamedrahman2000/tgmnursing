@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../config/supabaseClient"; // make sure you have supabase client initialized
 
@@ -38,7 +38,7 @@ const AdminLogin = () => {
   const handleForgotPassword = async () => {
     if (!email) return alert("Enter your email first");
 
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: "http://localhost:3000/reset-password",
     });
 

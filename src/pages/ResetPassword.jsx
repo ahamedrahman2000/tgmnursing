@@ -1,5 +1,5 @@
 // ResetPassword.jsx
-import React, { useState } from "react";
+import   { useState } from "react";
 import { supabase } from "../config/supabaseClient";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +14,7 @@ const ResetPassword = () => {
   const handleRequestReset = async () => {
     if (!email) return alert("Please enter your email");
 
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    const {  error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: "http://localhost:3000/reset-password", // adjust for deployment
     });
 
@@ -30,7 +30,7 @@ const ResetPassword = () => {
   const handleResetPassword = async () => {
     if (!newPassword || !code) return alert("Please provide all details");
 
-    const { data, error } = await supabase.auth.updateUser({
+    const {  error } = await supabase.auth.updateUser({
       password: newPassword,
       email: email,
       // Supabase automatically picks token from URL if using authLink

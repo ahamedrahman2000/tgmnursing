@@ -1,4 +1,4 @@
-import React from "react";
+ 
 import CourseCard from "../components/CourseCard";
 import { useNavigate } from "react-router-dom";
 

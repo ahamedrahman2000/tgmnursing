@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import   { useEffect, useState } from "react";
 
 export const Videos = () => {
   const [videos, setVideos] = useState([]);
@@ -15,7 +15,7 @@ export const Videos = () => {
     <div>
       <h2 className="font-bold mb-2">Training Videos</h2>
       {videos.slice(0, 2).map((v) => (
-        <iframe key={v.id} src={getEmbedUrl(v.video_url)} className="w-full h-44 rounded mb-2" />
+        <iframe key={v.id} src={getEmbedUrl(v.video_url)}  title="map" className="w-full h-44 rounded mb-2" />
       ))}
     </div>
   );

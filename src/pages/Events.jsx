@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import   { useEffect, useState } from "react";
 
 export const Events = () => {
   const [events, setEvents] = useState([]);
@@ -21,7 +21,7 @@ export const Events = () => {
         {/* LEFT FEATURED */}
         <div className="lg:w-2/3 bg-gray-50 rounded-lg overflow-hidden">
           <img
-            src={events[featured].image_url}
+            src={events[featured].image_url} alt="event image"
             className="w-full h-64 object-cover"
           />
 
