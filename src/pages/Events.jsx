@@ -5,7 +5,7 @@ export const Events = () => {
   const [featured, setFeatured] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/gallery")
+    fetch("http://tgmnursing.onrender.com/api/gallery")
       .then((res) => res.json())
       .then((data) => setEvents(data || []));
   }, []);

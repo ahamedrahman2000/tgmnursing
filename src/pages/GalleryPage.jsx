@@ -11,13 +11,13 @@ const GalleryPage = () => {
   }, []);
 
   const fetchImages = async () => {
-    const res = await fetch("http://localhost:5000/api/gallery");
+    const res = await fetch("http://tgmnursing.onrender.com/api/gallery");
     const data = await res.json();
     setImages(data || []);
   };
 
   const fetchVideos = async () => {
-    const res = await fetch("http://localhost:5000/api/videos");
+    const res = await fetch("http://tgmnursing.onrender.com/api/videos");
     const data = await res.json();
     setVideos(data || []);
   };

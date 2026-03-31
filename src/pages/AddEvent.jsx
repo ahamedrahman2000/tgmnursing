@@ -19,7 +19,7 @@ const AddEvents = () => {
     formData.append("date", date);
     formData.append("image", image);
 
-    const res = await fetch("http://localhost:5000/api/gallery/upload", {
+    const res = await fetch("https://tgmnursing.onrender.com/api/gallery/upload", {
       method: "POST",
       headers: { Authorization: token },
       body: formData,
