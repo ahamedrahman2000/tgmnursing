@@ -14,6 +14,12 @@ const adminRoutes = require("./routes/adminRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  }),
+);
 app.use("/api/students", studentRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/admin", adminRoutes);

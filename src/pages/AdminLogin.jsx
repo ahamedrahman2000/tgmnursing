@@ -39,7 +39,7 @@ const AdminLogin = () => {
     if (!email) return alert("Enter your email first");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://tgmnursing.onrender.com/reset-password",
+      redirectTo: "https://tgmnursing.onrender.com/reset-password",
     });
 
     if (error) {

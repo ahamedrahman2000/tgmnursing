@@ -1,11 +1,11 @@
 import  { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
-import AddEvents from "./AddEvent";
-import AddVideos from "./AddVideo";
+import AddEvents from "./AddEvent"; 
 import AddStudents from "./AddStudent";
 import StudentsList from "./StudentsList";
 import DashboardHome from "./DashboardHome";
 import { supabase } from "../config/supabaseClient";
+import { AddVideos } from "./AddVideo";
 const AdminDashboard = () => {
   const [active, setActive] = useState("dashboard");
   const navigate = useNavigate();

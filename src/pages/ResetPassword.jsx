@@ -15,7 +15,7 @@ const ResetPassword = () => {
     if (!email) return alert("Please enter your email");
 
     const {  error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://tgmnursing.onrender.com/reset-password", // adjust for deployment
+      redirectTo: "https://tgmnursing.onrender.com/reset-password", // adjust for deployment
     });
 
     if (error) {

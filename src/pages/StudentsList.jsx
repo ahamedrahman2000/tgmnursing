@@ -31,7 +31,7 @@ const StudentList = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete student?")) return;
 
-    const res = await fetch(`http://tgmnursing.onrender.com/api/students/${id}`, {
+    const res = await fetch(`https://tgmnursing.onrender.com/api/students/${id}`, {
       method: "DELETE",
     });
 
@@ -45,7 +45,7 @@ const StudentList = () => {
 
   const handleUpdate = async () => {
     const res = await fetch(
-      `http://tgmnursing.onrender.com/api/students/${selected.id}`,
+      `https://tgmnursing.onrender.com/api/students/${selected.id}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
