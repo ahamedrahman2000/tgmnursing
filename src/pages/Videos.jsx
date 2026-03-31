@@ -4,7 +4,7 @@ export const Videos = () => {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
-    fetch("http://tgmnursing.onrender.com/api/videos")
+    fetch("https://tgmnursing.onrender.com/api/videos")
       .then((res) => res.json())
       .then((data) => setVideos(data || []));
   }, []);

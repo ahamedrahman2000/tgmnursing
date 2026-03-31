@@ -7,7 +7,7 @@ const AddVideos = () => {
   const handleAdd = async () => {
     if (!videoUrl) return alert("Enter URL");
 
-    await fetch("http://localhost:5000/api/videos/add", {
+    await fetch("https://tgmnursing.onrender.com/api/videos/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
