@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Videos = () => {
   const [videos, setVideos] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("https://tgmnursing.onrender.com/api/videos")
@@ -10,7 +12,7 @@ export const Videos = () => {
       .catch((err) => console.error("Fetch error:", err));
   }, []);
 
-  // ✅ FIXED: works for ALL YouTube formats
+  // ✅ YouTube URL Fix
   const getEmbedUrl = (url) => {
     if (!url) return "";
 
@@ -30,21 +32,38 @@ export const Videos = () => {
   };
 
   return (
-    <div>
-      <h2 className="font-bold mb-2">Training Videos</h2>
+    <div className="mt-4">
+      {/* 🔥 HEADER WITH BUTTON */}
+      <div className="flex justify-between items-center mb-3 px-2">
+        <h2 className="font-bold text-lg md:text-xl">Training Videos</h2>
 
+        <button
+          onClick={() => navigate("/gallery/videos")}
+          className="text-blue-600 text-sm"
+        >
+          View All →
+        </button>
+      </div>
+
+      {/* 🎥 VIDEOS */}
       {videos.length === 0 ? (
-        <p>No videos found</p>
+        <p className="text-center text-gray-500">No videos found</p>
       ) : (
-        videos.map((v) => (
-          <iframe
-            key={v.id}
-            src={getEmbedUrl(v.video_url)}
-            title="video"
-            className="w-full h-44 rounded mb-2"
-            allowFullScreen
-          />
-        ))
+        <div className="grid grid-cols-2 gap-3 px-1">
+          {videos.slice(0, 4).map(
+            (
+              v, // ✅ ONLY 4 VIDEOS
+            ) => (
+              <iframe
+                key={v.id}
+                src={getEmbedUrl(v.video_url)}
+                title="video"
+                className="w-full h-40 md:h-48 rounded-lg shadow"
+                allowFullScreen
+              />
+            ),
+          )}
+        </div>
       )}
     </div>
   );

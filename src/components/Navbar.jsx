@@ -1,4 +1,4 @@
-import   { useState } from "react";
+import { useState } from "react";
 import logo from "../assets/images/logos.png";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,7 +9,8 @@ const Navbar = () => {
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "Courses", path: "/courses" },
-    { name: "Gallery", path: "/gallery" }, 
+    { name: "Events", path: "/events" },   // ✅ added
+    { name: "Videos", path: "/videos" },   // ✅ added
     { name: "Admin", path: "/admin-login" },
   ];
 

@@ -37,8 +37,10 @@ const Home = ({ setPage }) => {
             <Stats />
 
             {/* 📰 Events + Videos */}
-            <AdmissionSection />
-            <Events setPage={setPage} />
+            <section id="facilities">
+              <AdmissionSection />
+            </section>
+            <Events />
 
             {/* 📚 Facilities + Benefits */}
 
@@ -48,7 +50,9 @@ const Home = ({ setPage }) => {
             {/* 💬 Trust + FAQ */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Trust />
-              <FAQ />
+              <section id="faq">
+                <FAQ />
+              </section>
             </div>
 
             {/* 📍 Contact */}

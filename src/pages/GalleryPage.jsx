@@ -1,6 +1,9 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const GalleryPage = () => {
+  const { type } = useParams(); // "images" or "videos"
+
   const [images, setImages] = useState([]);
   const [videos, setVideos] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -30,60 +33,68 @@ const GalleryPage = () => {
         Gallery & Events
       </h1>
 
-      {/* 🔹 EVENTS SECTION */}
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Events</h2>
+      {/* 🔹 EVENTS (ONLY if not videos page) */}
+      {type !== "videos" && (
+        <>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Events</h2>
 
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
-        {images.map((img) => (
-          <div
-            key={img.id}
-            onClick={() => setSelected({ type: "image", data: img })}
-            className="bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer overflow-hidden"
-          >
-            <img
-              src={img.image_url}
-              alt={img.title}
-              className="w-full h-48 object-cover"
-            />
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
+            {images.map((img) => (
+              <div
+                key={img.id}
+                onClick={() => setSelected({ type: "image", data: img })}
+                className="bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer overflow-hidden"
+              >
+                <img
+                  src={img.image_url}
+                  alt={img.title}
+                  className="w-full h-48 object-cover"
+                />
 
-            <div className="p-3">
-              <h3 className="font-semibold text-gray-800 text-sm">
-                {img.title}
-              </h3>
-              <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                {img.description}
-              </p>
-            </div>
+                <div className="p-3">
+                  <h3 className="font-semibold text-gray-800 text-sm">
+                    {img.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    {img.description}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
-      {/* 🔹 VIDEOS SECTION */}
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Videos</h2>
+      {/* 🔹 VIDEOS (ONLY if not images page) */}
+      {type !== "images" && (
+        <>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Videos</h2>
 
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {videos.map((vid) => (
-          <div
-            key={vid.id}
-            onClick={() => setSelected({ type: "video", data: vid })}
-            className="bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer overflow-hidden"
-          >
-            <video
-              src={vid.video_url}
-              className="w-full h-48 object-cover"
-            />
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {videos.map((vid) => (
+              <div
+                key={vid.id}
+                onClick={() => setSelected({ type: "video", data: vid })}
+                className="bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer overflow-hidden"
+              >
+                <video
+                  src={vid.video_url}
+                  className="w-full h-48 object-cover"
+                />
 
-            <div className="p-3">
-              <h3 className="font-semibold text-gray-800 text-sm">
-                {vid.title}
-              </h3>
-              <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                {vid.description}
-              </p>
-            </div>
+                <div className="p-3">
+                  <h3 className="font-semibold text-gray-800 text-sm">
+                    {vid.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    {vid.description}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
       {/* 🔥 MODAL */}
       {selected && (

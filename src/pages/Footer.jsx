@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logos.png";
 
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <footer className="bg-gradient-to-br from-blue-900 to-gray-900 text-white mt-12">
       <div className="max-w-7xl mx-auto px-5 py-10 grid gap-8 md:grid-cols-3">
@@ -36,12 +38,39 @@ const Footer = () => {
           </h3>
 
           <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
-            <p>📄 Admission</p>
-            <p>📚 Courses</p>
-            <p>🎓 Fee Offers</p>
-            <p>🏥 Facilities</p>
-            <p>🎥 Videos</p>
-            <p>❓ FAQ</p>
+            <p
+              onClick={() => navigate("/admission")}
+              className="cursor-pointer hover:text-white"
+            >
+              📄 Admission
+            </p>
+
+            <p
+              onClick={() => navigate("/courses")}
+              className="cursor-pointer hover:text-white"
+            >
+              📚 Courses
+            </p>
+
+            <p
+              onClick={() => navigate("/videos")}
+              className="cursor-pointer hover:text-white"
+            >
+              🎥 Videos
+            </p>
+
+            {/* 📍 SECTION SCROLL */}
+            <a href="#offers" className="hover:text-white">
+              🎓 Fee Offers
+            </a>
+
+            <a href="#facilities" className="hover:text-white">
+              🏥 Facilities
+            </a>
+
+            <a href="#faq" className="hover:text-white">
+              ❓ FAQ
+            </a>
           </div>
         </div>
 
@@ -67,25 +96,24 @@ const Footer = () => {
 
       {/* BOTTOM BAR */}
       <div className="bg-black text-gray-400 text-xs py-4">
-  <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 gap-2">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 gap-2">
+          {/* LEFT */}
+          <p className="text-center md:text-left">
+            © {new Date().getFullYear()} TGM Nursing Institute
+          </p>
 
-    {/* LEFT */}
-    <p className="text-center md:text-left">
-      © {new Date().getFullYear()} TGM Nursing Institute
-    </p>
-
-    {/* RIGHT */}
-    <a
-      href="https://rahmandev.netlify.app/"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-gray-300 hover:text-white transition"
-    >
-      Developed by <span className="font-semibold text-white">EliteCode Academy</span>
-    </a>
-
-  </div>
-</div>
+          {/* RIGHT */}
+          <a
+            href="https://rahmandev.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-300 hover:text-white transition"
+          >
+            Developed by{" "}
+            <span className="font-semibold text-white">EliteCode Academy</span>
+          </a>
+        </div>
+      </div>
     </footer>
   );
 };

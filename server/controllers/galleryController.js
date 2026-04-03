@@ -92,22 +92,36 @@ exports.getImages = async (req, res) => {
 };
 
 exports.deleteImage = async (req, res) => {
+   console.log("DELETE HIT:", req.params.id);
   try {
-    const { id, image_url } = req.body;
+    const { id } = req.params;
 
-    // ❗ Extract file name from URL
-    const fileName = image_url.split("/").pop();
-
-    // 🗑️ Delete from storage
-    const { error: storageError } = await supabase.storage
+    // 1️⃣ Get image_url
+    const { data, error: fetchError } = await supabase
       .from("gallery")
-      .remove([fileName]);
+      .select("image_url")
+      .eq("id", id)
+      .single();
 
-    if (storageError) {
-      return res.status(500).json({ error: "Storage delete failed" });
+    if (fetchError) {
+      return res.status(500).json({ error: "Fetch failed" });
     }
 
-    // 🗑️ Delete from DB
+    // 2️⃣ Delete from storage ONLY if image exists
+    if (data?.image_url) {
+      const fileName = data.image_url.split("/").pop();
+
+      const { error: storageError } = await supabase.storage
+        .from("gallery")
+        .remove([fileName]);
+
+      if (storageError) {
+        console.log("Storage delete warning:", storageError);
+        // ⚠️ Don't stop execution
+      }
+    }
+
+    // 3️⃣ Delete from DB (MAIN STEP)
     const { error: dbError } = await supabase
       .from("gallery")
       .delete()
@@ -117,9 +131,43 @@ exports.deleteImage = async (req, res) => {
       return res.status(500).json({ error: "DB delete failed" });
     }
 
-    res.json({ message: "Deleted successfully" });
+    res.json({ message: "Deleted successfully ✅" });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+// exports.deleteImage = async (req, res) => {
+//   try {
+//     const { id, image_url } = req.body;
+
+//     // ❗ Extract file name from URL
+//     const fileName = image_url.split("/").pop();
+
+//     // 🗑️ Delete from storage
+//     const { error: storageError } = await supabase.storage
+//       .from("gallery")
+//       .remove([fileName]);
+
+//     if (storageError) {
+//       return res.status(500).json({ error: "Storage delete failed" });
+//     }
+
+//     // 🗑️ Delete from DB
+//     const { error: dbError } = await supabase
+//       .from("gallery")
+//       .delete()
+//       .eq("id", id);
+
+//     if (dbError) {
+//       return res.status(500).json({ error: "DB delete failed" });
+//     }
+
+//     res.json({ message: "Deleted successfully" });
+
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
