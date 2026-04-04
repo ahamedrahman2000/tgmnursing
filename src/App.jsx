@@ -14,6 +14,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { Events } from "./pages/Events";
 import GalleryPage from "./pages/GalleryPage";
 import StudentList from "./pages/StudentsList";
+import CashflowDashboard from "./pages/CashflowDashboard";
+import AboutUs from "./pages/AboutUs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 function App() {
   return (
@@ -26,12 +30,23 @@ function App() {
        <Route path="/gallery/:type" element={<GalleryPage />} />
         <Route path="/videos" element={<VideoPage />} /> 
         <Route path="/events" element={<Events />} />
+        <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route
           path="/admin-dashboard"
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cashflow"
+          element={
+            <ProtectedRoute>
+              <CashflowDashboard />
             </ProtectedRoute>
           }
         />

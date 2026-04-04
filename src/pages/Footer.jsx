@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logos.png";
+import VisitorFooter from "./VisitorFooter";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const Footer = () => {
           </h3>
 
           <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
+            {/* Original Links */}
             <p
               onClick={() => navigate("/admission")}
               className="cursor-pointer hover:text-white"
@@ -59,7 +61,6 @@ const Footer = () => {
               🎥 Videos
             </p>
 
-            {/* 📍 SECTION SCROLL */}
             <a href="#offers" className="hover:text-white">
               🎓 Fee Offers
             </a>
@@ -70,7 +71,36 @@ const Footer = () => {
 
             <a href="#faq" className="hover:text-white">
               ❓ FAQ
-            </a>
+            </a> 
+
+            {/* New Links */}
+            <p
+              onClick={() => navigate("/aboutus")}
+              className="cursor-pointer hover:text-white"
+            >
+              ℹ️ About Us
+            </p>
+
+            <p
+              onClick={() => navigate("/privacy")}
+              className="cursor-pointer hover:text-white"
+            >
+              🔒 Privacy Policy
+            </p>
+
+            <p
+              onClick={() => navigate("/terms")}
+              className="cursor-pointer hover:text-white"
+            >
+              📜 Terms & Conditions
+            </p>
+
+            <p
+              onClick={() => navigate("/resources")}
+              className="cursor-pointer hover:text-white"
+            >
+              📚 Our Other Resources
+            </p>
           </div>
         </div>
 
@@ -87,6 +117,7 @@ const Footer = () => {
 
           <p className="text-xs mt-1 text-gray-400">
             ✉️ tgmnursing2019@gmail.com
+            <VisitorFooter />
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 // Contact.jsx
 export const Contact = () => (
-  <div className="bg-white p-6 rounded-2xl shadow-lg max-w-7xl mx-auto">
+  <div className="bg-white p-6 rounded-2xl shadow-lg  mt-6">
     <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center md:text-left">
       Contact Us
     </h2>

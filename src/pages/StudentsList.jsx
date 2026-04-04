@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../config/supabaseClient"; // make sure supabase is initialized
 import jsPDF from "jspdf";
 import logo from "../assets/images/logos.png";
 import { FaEye, FaEdit, FaTrash, FaFilePdf } from "react-icons/fa";
@@ -8,8 +9,7 @@ const StudentList = () => {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
   const [editMode, setEditMode] = useState(false);
-
-  // ✅ FILTERS
+  const [bonafideData, setBonafideData] = useState(null);
   const [filters, setFilters] = useState({
     name: "",
     course: "",
@@ -18,50 +18,59 @@ const StudentList = () => {
     age: "",
   });
 
+  // ✅ FETCH STUDENTS
+  // const fetchStudents = async () => {
+  //   const { data, error } = await supabase
+  //     .from("students")
+  //     .select("*")
+  //     .order("registration_date", { ascending: false });
+
+  //   if (error) console.error("Fetch error:", error.message);
+  //   else setStudents(data || []);
+  // };
+
+  const fetchStudents = async () => {
+    const { data, error } = await supabase
+      .from("students")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+    } else {
+      setStudents(data);
+    }
+  };
+
   useEffect(() => {
     fetchStudents();
   }, []);
 
-  const fetchStudents = async () => {
-    const res = await fetch("https://tgmnursing.onrender.com/api/students");
-    const data = await res.json();
-    setStudents(data || []);
-  };
-
+  // ✅ DELETE STUDENT
   const handleDelete = async (id) => {
     if (!window.confirm("Delete student?")) return;
 
-    const res = await fetch(
-      `https://tgmnursing.onrender.com/api/students/${id}`,
-      {
-        method: "DELETE",
-      },
-    );
+    const { error } = await supabase.from("students").delete().eq("id", id);
 
-    if (res.ok) {
+    if (error) alert("Delete failed ❌ " + error.message);
+    else {
       alert("Deleted ✅");
       fetchStudents();
-    } else {
-      alert("Delete failed ❌");
     }
   };
 
+  // ✅ UPDATE STUDENT
   const handleUpdate = async () => {
-    const res = await fetch(
-      `https://tgmnursing.onrender.com/api/students/${selected.id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selected),
-      },
-    );
+    const { error } = await supabase
+      .from("students")
+      .update(selected)
+      .eq("id", selected.id);
 
-    if (res.ok) {
+    if (error) alert("Update failed ❌ " + error.message);
+    else {
       alert("Updated ✅");
       setSelected(null);
       fetchStudents();
-    } else {
-      alert("Update Failed ❌");
     }
   };
 
@@ -76,7 +85,7 @@ const StudentList = () => {
     return age;
   };
 
-  // ✅ FILTER LOGIC
+  // ✅ FILTERED STUDENTS
   const filtered = students.filter((s) => {
     return (
       Object.values(s).join(" ").toLowerCase().includes(search.toLowerCase()) &&
@@ -91,40 +100,32 @@ const StudentList = () => {
     );
   });
 
-  // ✅ PDF
+  // ✅ GENERATE PDF
   const generatePDF = (s) => {
     const doc = new jsPDF();
-
     const img = new Image();
     img.src = logo;
 
     img.onload = () => {
-      // 🟦 HEADER
-
-      // 🖼️ Logo
+      // 🖼️ HEADER
       doc.addImage(img, "PNG", 10, 5, 25, 25);
-
-      // 🏫 Title
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
       doc.text("TGM Nursing Institute of Paramedical Science", 40, 14);
-
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
       doc.text("Thirukovilur Road, Thiyagadurgam - 606206", 40, 19);
       doc.text("Phone: 9500655394", 40, 23);
 
-      // 📄 Section Title
-      doc.setFontSize(11);
+      // Section title
       doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
       doc.text("STUDENT DETAILS", 70, 38);
-
       doc.line(10, 40, 200, 40);
 
-      // 📊 TWO COLUMN LAYOUT
+      // Two-column layout
       let leftY = 48;
       let rightY = 48;
-
       const leftX = 14;
       const rightX = 110;
 
@@ -132,10 +133,8 @@ const StudentList = () => {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(8);
         doc.text(label, leftX, leftY);
-
         doc.setFont("helvetica", "normal");
         doc.text(`: ${value || "-"}`, leftX + 40, leftY);
-
         leftY += 6;
       };
 
@@ -143,14 +142,12 @@ const StudentList = () => {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(8);
         doc.text(label, rightX, rightY);
-
         doc.setFont("helvetica", "normal");
         doc.text(`: ${value || "-"}`, rightX + 40, rightY);
-
         rightY += 6;
       };
 
-      // 🧾 LEFT COLUMN
+      // LEFT COLUMN
       rowLeft("Admission No", s.admission_no);
       rowLeft("Admission Date", s.admission_date);
       rowLeft("Reg Date", s.registration_date);
@@ -162,7 +159,7 @@ const StudentList = () => {
       rowLeft("Gender", s.gender);
       rowLeft("Mobile", s.mobile);
 
-      // 🧾 RIGHT COLUMN
+      // RIGHT COLUMN
       rowRight("Course", s.course);
       rowRight("Qualification", s.qualification);
       rowRight("School", s.school_last_attended);
@@ -177,24 +174,20 @@ const StudentList = () => {
       rowRight("Paid", s.paid_fee);
       rowRight("Pending", s.pending_fee);
 
-      // 📍 FULL WIDTH (Address)
+      // FULL WIDTH: ADDRESS
       let y = Math.max(leftY, rightY) + 5;
-
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.text("Address", 14, y);
-
       doc.setFont("helvetica", "normal");
       doc.text(`: ${s.address || "-"}`, 50, y);
 
       y += 8;
-
-      // 📄 DOCUMENTS
+      // DOCUMENTS
       if (s.documents && s.documents.length > 0) {
         doc.setFont("helvetica", "bold");
         doc.text("Documents:", 14, y);
         y += 6;
-
         doc.setFont("helvetica", "normal");
         s.documents.forEach((d) => {
           doc.text(`• ${d}`, 18, y);
@@ -202,22 +195,103 @@ const StudentList = () => {
         });
       }
 
-      // 📌 FOOTER
+      // FOOTER
       doc.line(10, 280, 200, 280);
       doc.setFontSize(7);
       doc.text("Generated by TGM Nursing System", 14, 285);
 
-      // 💾 SAVE
+      // SAVE
       doc.save(`${s.student_name}.pdf`);
+    };
+  };
+  const generateBonafidePDF = (student) => {
+    const doc = new jsPDF();
+    const img = new Image();
+    img.src = logo;
+
+    img.onload = () => {
+      // 🔷 HEADER BOX
+      doc.setDrawColor(0);
+      doc.rect(10, 10, 190, 35);
+
+      doc.addImage(img, "PNG", 15, 13, 25, 25);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text("TGM NURSING INSTITUTE OF PARAMEDICAL SCIENCE", 105, 18, {
+        align: "center",
+      });
+
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.text("Thiyagadurgam - 606206", 105, 24, { align: "center" });
+      doc.text("Thirukovilur Main Road, Near Police Station", 105, 29, {
+        align: "center",
+      });
+      doc.text("(Approved under Central Govt. SR Act 21 of 1860)", 105, 34, {
+        align: "center",
+      });
+
+      // 🔶 TITLE
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text("BONAFIDE CERTIFICATE", 105, 55, { align: "center" });
+
+      doc.line(60, 58, 150, 58);
+
+      // 📄 CONTENT BOX
+      doc.setFont("times", "normal");
+      doc.setFontSize(12);
+
+      let y = 70;
+
+      const text = `
+This is to certify that Mr./Ms. ${student.student_name},
+
+Son/Daughter of Mr. ${student.father_name},
+
+is a bonafide student of this institution and has studied in ${student.course}.
+
+He/She bears Admission Number ${student.admission_no} and
+
+studied during the academic year ${student.registration_date}.
+
+Date of Birth (as per records): ${student.dob}.
+`;
+
+      const splitText = doc.splitTextToSize(text, 170);
+      doc.text(splitText, 20, y);
+
+      y += splitText.length * 7 + 20;
+
+      // ✅ PAGE BREAK FIX
+      if (y > 260) {
+        doc.addPage();
+        y = 20;
+      }
+
+      // 🔻 FOOTER
+      doc.line(10, y, 200, y);
+      y += 10;
+
+      doc.setFontSize(10);
+      doc.text("Institution Seal", 20, y);
+      doc.text("Authorized Signature", 140, y);
+
+      // 📌 DATE
+      doc.setFontSize(9);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, y + 10);
+
+      // SAVE
+      doc.save(`Bonafide_${student.student_name}.pdf`);
     };
   };
 
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
-      {/* 🔷 TITLE */}
       <h2 className="text-2xl font-bold mb-4 text-gray-800">🎓 Students</h2>
 
-      {/* 🔍 SEARCH */}
+      {/* SEARCH */}
       <input
         placeholder="🔍 Search students..."
         value={search}
@@ -225,7 +299,7 @@ const StudentList = () => {
         className="w-full p-3 mb-4 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none"
       />
 
-      {/* 🎯 FILTERS */}
+      {/* FILTERS */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         <input
           placeholder="Name"
@@ -233,14 +307,12 @@ const StudentList = () => {
           onChange={(e) => setFilters({ ...filters, name: e.target.value })}
           className="input"
         />
-
         <input
           placeholder="Course"
           value={filters.course}
           onChange={(e) => setFilters({ ...filters, course: e.target.value })}
           className="input"
         />
-
         <select
           value={filters.gender}
           onChange={(e) => setFilters({ ...filters, gender: e.target.value })}
@@ -250,14 +322,12 @@ const StudentList = () => {
           <option>Male</option>
           <option>Female</option>
         </select>
-
         <input
           type="date"
           value={filters.date}
           onChange={(e) => setFilters({ ...filters, date: e.target.value })}
           className="input"
         />
-
         <input
           placeholder="Age"
           value={filters.age}
@@ -266,7 +336,7 @@ const StudentList = () => {
         />
       </div>
 
-      {/* 🖥 DESKTOP TABLE */}
+      {/* TABLE */}
       <div className="hidden md:block bg-white rounded-xl shadow overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-blue-50 text-gray-700">
@@ -279,7 +349,6 @@ const StudentList = () => {
               <th className="text-center">Actions</th>
             </tr>
           </thead>
-
           <tbody>
             {filtered.map((s) => (
               <tr key={s.id} className="border-t hover:bg-gray-50 transition">
@@ -287,7 +356,6 @@ const StudentList = () => {
                 <td>{s.student_name}</td>
                 <td>{s.course}</td>
                 <td>{s.mobile}</td>
-
                 <td>
                   ₹{s.paid_fee || 0} / ₹{s.total_fee || 0}
                   <p className="text-xs text-red-500">
@@ -305,14 +373,18 @@ const StudentList = () => {
                     >
                       <FaEye />
                     </button>
-
                     <button
                       onClick={() => generatePDF(s)}
                       className="text-green-600 hover:scale-110"
                     >
                       <FaFilePdf />
                     </button>
-
+                    <button
+                      onClick={() => setBonafideData(s)}
+                      className="text-purple-600"
+                    >
+                      📄
+                    </button>
                     <button
                       onClick={() => {
                         setSelected(s);
@@ -322,7 +394,6 @@ const StudentList = () => {
                     >
                       <FaEdit />
                     </button>
-
                     <button
                       onClick={() => handleDelete(s.id)}
                       className="text-red-500 hover:scale-110"
@@ -337,7 +408,7 @@ const StudentList = () => {
         </table>
       </div>
 
-      {/* 📱 MOBILE CARDS */}
+      {/* MOBILE CARDS */}
       <div className="md:hidden space-y-4">
         {filtered.map((s) => (
           <div key={s.id} className="bg-white p-4 rounded-xl shadow">
@@ -362,7 +433,6 @@ const StudentList = () => {
               </p>
             </div>
 
-            {/* ACTIONS */}
             <div className="flex justify-between mt-3 text-lg border-t pt-2">
               <button
                 onClick={() => {
@@ -373,11 +443,15 @@ const StudentList = () => {
               >
                 <FaEye />
               </button>
-
               <button onClick={() => generatePDF(s)} className="text-green-600">
                 <FaFilePdf />
               </button>
-
+              <button
+                onClick={() => setBonafideData(s)}
+                className="text-purple-600"
+              >
+                📄
+              </button>
               <button
                 onClick={() => {
                   setSelected(s);
@@ -387,7 +461,6 @@ const StudentList = () => {
               >
                 <FaEdit />
               </button>
-
               <button
                 onClick={() => handleDelete(s.id)}
                 className="text-red-500"
@@ -399,7 +472,7 @@ const StudentList = () => {
         ))}
       </div>
 
-      {/* 🪟 MODAL (UNCHANGED BUT CLEANED) */}
+      {/* MODAL */}
       {selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white p-5 rounded-xl w-full max-w-lg max-h-[85vh] overflow-auto shadow-lg">
@@ -410,7 +483,6 @@ const StudentList = () => {
             {Object.entries(selected).map(([key, value]) => (
               <div key={key} className="mb-3">
                 <label className="text-xs text-gray-500">{key}</label>
-
                 {editMode ? (
                   <input
                     value={value || ""}
@@ -434,7 +506,6 @@ const StudentList = () => {
                   Save
                 </button>
               )}
-
               <button
                 onClick={() => setSelected(null)}
                 className="bg-red-500 text-white px-4 py-2 rounded-lg"
@@ -442,6 +513,81 @@ const StudentList = () => {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {bonafideData && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl w-full max-w-lg shadow-lg relative">
+            {/* ❌ CLOSE BUTTON */}
+            <button
+              onClick={() => setBonafideData(null)}
+              className="absolute top-3 right-3 text-red-500 text-xl"
+            >
+              ✖
+            </button>
+
+            <h2 className="text-lg font-bold mb-4 text-center">
+              Bonafide Preview
+            </h2>
+
+            {/* Editable Fields */}
+            <input
+              className="input mb-2"
+              value={bonafideData.student_name}
+              onChange={(e) =>
+                setBonafideData({
+                  ...bonafideData,
+                  student_name: e.target.value,
+                })
+              }
+              placeholder="Student Name"
+            />
+
+            <input
+              className="input mb-2"
+              value={bonafideData.father_name}
+              onChange={(e) =>
+                setBonafideData({
+                  ...bonafideData,
+                  father_name: e.target.value,
+                })
+              }
+              placeholder="Father Name"
+            />
+
+            <input
+              className="input mb-2"
+              value={bonafideData.course}
+              onChange={(e) =>
+                setBonafideData({ ...bonafideData, course: e.target.value })
+              }
+              placeholder="Course"
+            />
+
+            <input
+              className="input mb-4"
+              value={bonafideData.registration_date}
+              onChange={(e) =>
+                setBonafideData({
+                  ...bonafideData,
+                  registration_date: e.target.value,
+                })
+              }
+              placeholder="Academic Year"
+            />
+
+            {/* ✅ CONFIRM BUTTON */}
+            <button
+              onClick={() => {
+                generateBonafidePDF(bonafideData);
+                setBonafideData(null);
+              }}
+              className="w-full bg-green-600 text-white py-2 rounded-lg"
+            >
+              Confirm & Download PDF
+            </button>
           </div>
         </div>
       )}

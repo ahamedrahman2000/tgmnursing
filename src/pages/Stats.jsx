@@ -3,7 +3,7 @@ import   { useEffect, useState } from "react";
 export const Stats = () => {
   const statsData = [
     { label: "Courses", value: 10, gradient: "from-purple-500 to-purple-300" },
-    { label: "Students", value: 1000, gradient: "from-blue-500 to-blue-300" },
+    { label: "Completed Students", value: 890, gradient: "from-blue-500 to-blue-300" },
     { label: "Placements", value: 95, suffix: "%", gradient: "from-green-500 to-green-300" },
     { label: "Years", value: new Date().getFullYear() - 2019, gradient: "from-orange-500 to-orange-300" },
   ];

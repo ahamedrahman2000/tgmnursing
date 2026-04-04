@@ -6,6 +6,7 @@ import StudentsList from "./StudentsList";
 import DashboardHome from "./DashboardHome";
 import { supabase } from "../config/supabaseClient";
 import { AddVideos } from "./AddVideo";
+import CashflowDashboard from "./CashflowDashboard";
 const AdminDashboard = () => {
   const [active, setActive] = useState("dashboard");
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const logout = async () => {
       <button onClick={() => setActive("videos")} className="menu-btn">Add Videos</button>
       <button onClick={() => setActive("add-student")} className="menu-btn">Register Student</button>
       <button onClick={() => setActive("students")} className="menu-btn">All Students</button>
+      <button onClick={() => setActive("cashflow")} className="menu-btn">Cash Flow</button>
     </div>
 
     <button
@@ -48,6 +50,7 @@ const logout = async () => {
     {active === "videos" && <AddVideos />}
     {active === "add-student" && <AddStudents />}
     {active === "students" && <StudentsList />}
+    {active === "cashflow" && <CashflowDashboard />}
   </div>
 
   {/* 📱 MOBILE BOTTOM NAV */}
@@ -72,6 +75,11 @@ const logout = async () => {
     </button>
 
     <button onClick={() => setActive("students")} className="flex flex-col items-center text-xs">
+      👩‍🎓
+      <span>Students</span>
+    </button>
+
+    <button onClick={() => setActive("cashflow")} className="flex flex-col items-center text-xs">
       👩‍🎓
       <span>Students</span>
     </button>
