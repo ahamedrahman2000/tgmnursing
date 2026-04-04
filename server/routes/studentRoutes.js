@@ -1,13 +1,13 @@
 // const express = require("express");
 // const router = express.Router();
-// const { addStudent, getStudents } = require("../controllers/studentController");
+// const { addStudent, getStudents, deleteStudent } = require("../controllers/studentController");
 
 // // ➕ Add student
 // router.post("/add", addStudent);
 
 // // 📥 Get students
 // router.get("/", getStudents);
-// router.delete("/students/:id", studentController.deleteStudent);
+// router.delete("/:id", deleteStudent);
 // router.put("/students/:id", async (req, res) => {
 //   const { id } = req.params;
 
@@ -24,19 +24,20 @@
 
 const express = require("express");
 const router = express.Router();
-const supabase = require("../config/supabase"); // ✅ REQUIRED
-const studentController = require("../controllers/studentController");
+const supabase = require("../config/supabase");
+
+const { addStudent, getStudents, deleteStudent } = require("../controllers/studentController");
 
 // ➕ Add student
-router.post("/add", studentController.addStudent);
+router.post("/add", addStudent);
 
 // 📥 Get students
-router.get("/", studentController.getStudents);
+router.get("/", getStudents);
 
-// ❌ DELETE (FIXED PATH)
-router.delete("/:id", studentController.deleteStudent);
+// ❌ Delete
+router.delete("/:id", deleteStudent);
 
-// ✏️ UPDATE (FIXED PATH)
+// ✏️ Update
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -47,7 +48,7 @@ router.put("/:id", async (req, res) => {
 
   if (error) return res.status(500).json(error);
 
-  res.json({ message: "Updated ✅" });
+  res.json({ message: "Updated" });
 });
 
 module.exports = router;

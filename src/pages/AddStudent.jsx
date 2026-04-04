@@ -45,18 +45,18 @@ const AddStudents = () => {
     "Aadhaar",
   ];
 
- const handleChange = (e) => {
-  const { name, value } = e.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-  let updatedForm = { ...form, [name]: value };
+    let updatedForm = { ...form, [name]: value };
 
-  const total = parseFloat(updatedForm.total_fee) || 0;
-  const paid = parseFloat(updatedForm.paid_fee) || 0;
+    const total = parseFloat(updatedForm.total_fee) || 0;
+    const paid = parseFloat(updatedForm.paid_fee) || 0;
 
-  updatedForm.pending_fee = total - paid;
+    updatedForm.pending_fee = total - paid;
 
-  setForm(updatedForm);
-};
+    setForm(updatedForm);
+  };
 
   const handleCheckbox = (doc) => {
     if (documents.includes(doc)) {
@@ -74,7 +74,7 @@ const AddStudents = () => {
     }
   };
 
-  const handleSubmit = async () => { 
+  const handleSubmit = async () => {
     // if (!form.student_name || !form.mobile) {
     //   return alert("Please fill required fields");
     // }
@@ -84,7 +84,7 @@ const AddStudents = () => {
       ...form,
       documents,
     };
- console.log("Sending Data 👉", dataToSend);
+    console.log("Sending Data 👉", dataToSend);
     const res = await fetch(
       "https://tgmnursing.onrender.com/api/students/add",
       {

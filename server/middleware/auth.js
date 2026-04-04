@@ -1,15 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-  let token = req.headers.authorization;
+  const token = req.headers.authorization;
 
   if (!token) {
     return res.status(401).json({ message: "No token" });
-  }
-
-  // ✅ REMOVE "Bearer "
-  if (token.startsWith("Bearer ")) {
-    token = token.split(" ")[1];
   }
 
   try {
@@ -17,7 +12,6 @@ module.exports = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    console.log("Auth error:", err.message);
-    return res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Invalid token" });
   }
 };

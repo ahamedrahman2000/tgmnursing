@@ -14,12 +14,6 @@ const adminRoutes = require("./routes/adminRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  }),
-);
 app.use("/api/students", studentRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/admin", adminRoutes);
@@ -41,38 +35,8 @@ app.get("/test-supabase", async (req, res) => {
   res.json(data);
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-// const express = require("express");
-// const cors = require("cors");
-
-// const app = express();
-
-// // ✅ CORS (IMPORTANT for Netlify)
-// app.use(cors({
-//   origin: "*", // later you can restrict to Netlify URL
-// }));
-
-// app.use(express.json());
-
-// // ✅ TEST ROUTE
-// app.get("/", (req, res) => {
-//   res.send("API Running ✅");
-// });
-
-// // 👉 your routes
-// app.use("/api/students", require("./routes/students"));
-// app.use("/api/gallery", require("./routes/gallery"));
-// app.use("/api/videos", require("./routes/videos"));
-// app.use("/api/admin", require("./routes/admin"));
-
-// // ✅ PORT FIX (VERY IMPORTANT)
-// const PORT = process.env.PORT || 5000;
-
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
