@@ -50,15 +50,12 @@ const GalleryPage = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        Loading gallery...
-      </div>
+      <div className="text-center py-20 text-gray-500">Loading gallery...</div>
     );
   }
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen px-4 sm:px-8 md:px-14 py-10">
-
       {/* 🔥 TITLE */}
       <h1 className="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-12">
         Gallery & Events
@@ -135,58 +132,54 @@ const GalleryPage = () => {
 
       {/* 🔥 MODAL */}
       {selected && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-
-          <div className="relative w-full max-w-5xl">
-
-            {/* CLOSE */}
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-2 sm:p-4 overflow-auto">
+          <div className="relative w-full max-w-3xl sm:max-w-4xl bg-white rounded-2xl shadow-2xl">
+            {/* CLOSE BUTTON */}
             <button
               onClick={() => setSelected(null)}
-              className="absolute -top-10 right-0 text-white text-xl"
+              className="absolute top-2 right-2 text-black text-2xl bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-gray-100 transition"
             >
               ✕
             </button>
 
             {/* CONTENT */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-2xl">
-
+            <div className="overflow-hidden">
               {/* IMAGE */}
               {selected.type === "image" && (
                 <div className="bg-black flex justify-center">
                   <img
                     src={selected.data.image_url}
-                    alt=""
-                    className="max-h-[80vh] w-full object-contain"
+                    alt={selected.data.title || ""}
+                    className="w-full max-h-[60vh] sm:max-h-[70vh] object-contain"
                   />
                 </div>
               )}
 
               {/* VIDEO */}
               {selected.type === "video" && (
-                <iframe
-                  src={getEmbedUrl(selected.data.video_url)}
-                  className="w-full h-[450px]"
-                  allowFullScreen
-                  title="video"
-                />
+                <div className="flex justify-center">
+                  <iframe
+                    src={getEmbedUrl(selected.data.video_url)}
+                    className="w-full max-h-[60vh] sm:max-h-[70vh] rounded-lg"
+                    allowFullScreen
+                    title={selected.data.title || "video"}
+                  />
+                </div>
               )}
 
               {/* TEXT */}
-              <div className="p-5">
-                <h3 className="font-bold text-lg">
+              <div className="p-4 sm:p-5">
+                <h3 className="font-bold text-lg sm:text-xl">
                   {selected.data.title}
                 </h3>
-
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 mt-2 text-sm sm:text-base">
                   {selected.data.description}
                 </p>
               </div>
-
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };

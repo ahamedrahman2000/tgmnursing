@@ -150,11 +150,11 @@ const CourseDetails = () => {
 
   if (!course) {
     return (
-      <div className="p-6 text-center">
+      <div className="p-4 text-center">
         <p className="text-red-500 font-semibold">Course not found</p>
         <button
           onClick={() => navigate("/courses")}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto"
         >
           Back to Courses
         </button>
@@ -163,23 +163,23 @@ const CourseDetails = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-4 sm:p-6 md:p-10">
-      
+    <div className="bg-gray-50 min-h-screen p-4 sm:p-6 md:p-10 space-y-6">
+
       {/* Title */}
-      <h1 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-2 text-center">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-700 mb-1 text-center">
         {course.title}
       </h1>
 
-      <p className="text-center text-gray-600 mb-8">
+      <p className="text-center text-gray-600 text-sm sm:text-base mb-6">
         ⏳ Duration: {course.duration}
       </p>
 
       {/* DETAILS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
 
         {/* LEFT SIDE */}
-        <div className="bg-white p-5 rounded-xl shadow space-y-3">
-          <h2 className="text-lg font-semibold text-blue-600 mb-2">
+        <div className="bg-white p-4 sm:p-5 rounded-xl shadow space-y-2 sm:space-y-3 text-sm sm:text-base">
+          <h2 className="text-md sm:text-lg font-semibold text-blue-600 mb-1">
             📘 Course Details
           </h2>
 
@@ -190,8 +190,8 @@ const CourseDetails = () => {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="bg-white p-5 rounded-xl shadow space-y-3">
-          <h2 className="text-lg font-semibold text-blue-600 mb-2">
+        <div className="bg-white p-4 sm:p-5 rounded-xl shadow space-y-2 sm:space-y-3 text-sm sm:text-base">
+          <h2 className="text-md sm:text-lg font-semibold text-blue-600 mb-1">
             💼 Career Info
           </h2>
 
@@ -205,17 +205,17 @@ const CourseDetails = () => {
       </div>
 
       {/* APPLY BUTTON */}
-      <div className="text-center mt-10 space-y-4">
-        
-        <button onClick={() => navigate("/admission")} className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md transition">
+      <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
+        <button
+          onClick={() => navigate("/admission")}
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md transition w-full sm:w-auto"
+        >
           📞 Apply Now
         </button>
 
-        <br />
-
         <button
           onClick={() => navigate("/courses")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition w-full sm:w-auto"
         >
           ⬅ Back to Courses
         </button>
