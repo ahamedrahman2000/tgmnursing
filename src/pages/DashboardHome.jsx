@@ -1,234 +1,82 @@
-// import { useEffect, useState } from "react";
-
-// const DashboardHome = () => {
-//   const [data, setData] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     fetchStudents();
-//   }, []);
-
-//   const fetchStudents = async () => {
-//     try {
-//       const res = await fetch("https://tgmnursing.onrender.com/api/students");
-//       if (!res.ok) throw new Error("Failed to fetch");
-
-//       const result = await res.json();
-//       setData(result || []);
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // 📊 STATS
-//   const totalStudents = data.length;
-//   const currentStudents = data.filter((s) => s.status !== "passed").length;
-//   const passedStudents = data.filter((s) => s.status === "passed").length;
-
-//   // 🎓 COURSE COUNT
-//   const courses = {};
-//   data.forEach((s) => {
-//     if (s.course) {
-//       courses[s.course] = (courses[s.course] || 0) + 1;
-//     }
-//   });
-
-//   // 🚻 GENDER
-//   const male = data.filter((s) => s.gender === "Male").length;
-//   const female = data.filter((s) => s.gender === "Female").length;
-
-//   // 📤 EXPORT CSV
-//   const exportCSV = () => {
-//     if (!data.length) return;
-
-//     const headers = Object.keys(data[0]).join(",");
-//     const rows = data
-//       .map((s) =>
-//         Object.values(s)
-//           .map((v) => `"${v ?? ""}"`)
-//           .join(","),
-//       )
-//       .join("\n");
-
-//     const csv = headers + "\n" + rows;
-
-//     const blob = new Blob([csv], { type: "text/csv" });
-//     const url = window.URL.createObjectURL(blob);
-
-//     const a = document.createElement("a");
-//     a.href = url;
-//     a.download = "students.csv";
-//     a.click();
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="text-center mt-10 text-gray-500">
-//         Loading dashboard...
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="p-3 md:p-6 space-y-6 bg-gray-100 min-h-screen">
-//       {/* HEADER */}
-//       <div className="flex justify-between items-center flex-wrap gap-3">
-//         <h2 className="text-lg md:text-2xl font-bold">Dashboard Overview</h2>
-
-//         <button
-//           onClick={exportCSV}
-//           className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm shadow"
-//         >
-//           📥 Export CSV
-//         </button>
-//       </div>
-
-//       {/* 📊 STATS CARDS */}
-//       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-//         <Card title="Total Students" value={totalStudents} />
-//         <Card title="Current" value={currentStudents} />
-//         <Card title="Passed" value={passedStudents} />
-//       </div>
-
-//       {/* 🎓 COURSE SECTION */}
-//       <Section title="Course Wise Students">
-//         {Object.entries(courses).map(([course, count]) => (
-//           <Row key={course} label={course} value={count} />
-//         ))}
-//       </Section>
-
-//       {/* 🚻 GENDER */}
-//       <Section title="Gender Distribution">
-//         <Row label="Male" value={male} />
-//         <Row label="Female" value={female} />
-//       </Section>
-
-//       {/* 👩‍🎓 RECENT */}
-//       <div className="bg-white rounded-2xl shadow p-4 overflow-x-auto">
-//         <h3 className="font-semibold mb-3 text-sm md:text-base">
-//           Recent Students
-//         </h3>
-
-//         <table className="min-w-full text-xs md:text-sm">
-//           <thead>
-//             <tr className="border-b text-gray-600">
-//               <th className="text-left py-2">Name</th>
-//               <th className="text-left py-2">Course</th>
-//               <th className="text-left py-2">Mobile</th>
-//               <th className="text-left py-2">Status</th>
-//             </tr>
-//           </thead>
-
-//           <tbody>
-//             {data.slice(0, 5).map((s) => (
-//               <tr key={s.id} className="border-b hover:bg-gray-50">
-//                 <td className="py-2">{s.student_name}</td>
-//                 <td>{s.course}</td>
-//                 <td>{s.mobile}</td>
-//                 <td>
-//                   <span
-//                     className={`px-2 py-1 rounded text-white text-[10px] md:text-xs ${
-//                       s.status === "passed" ? "bg-green-500" : "bg-yellow-500"
-//                     }`}
-//                   >
-//                     {s.status || "active"}
-//                   </span>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// };
-
-// /* 🔹 MODERN CARD */
-// const Card = ({ title, value }) => (
-//   <div className="bg-white rounded-2xl shadow p-4 flex flex-col items-center justify-center">
-//     <p className="text-gray-500 text-xs md:text-sm">{title}</p>
-//     <p className="text-lg md:text-2xl font-bold mt-1">{value}</p>
-//   </div>
-// );
-
-// /* 🔹 SECTION */
-// const Section = ({ title, children }) => (
-//   <div className="bg-white rounded-2xl shadow p-4">
-//     <h3 className="font-semibold mb-3 text-sm md:text-base">{title}</h3>
-//     <div className="space-y-2">{children}</div>
-//   </div>
-// );
-
-// /* 🔹 ROW */
-// const Row = ({ label, value }) => (
-//   <div className="flex justify-between text-xs md:text-sm border-b pb-1">
-//     <span className="text-gray-600">{label}</span>
-//     <span className="font-medium">{value}</span>
-//   </div>
-// );
-
-// export default DashboardHome;
-// DashboardHome.jsx
 import { useEffect, useState } from "react";
-import { supabase } from "../config/supabaseClient"; // Your Supabase client
+import { supabase } from "../config/supabaseClient";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
-const DashboardHome = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function StudentDashboard() {
+  const [students, setStudents] = useState([]);
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    passed: 0,
+  });
 
   useEffect(() => {
     fetchStudents();
   }, []);
 
-  // ✅ FETCH STUDENTS FROM SUPABASE
   const fetchStudents = async () => {
-    try {
-      const { data: students, error } = await supabase
-        .from("students")
-        .select("*")
-        .order("registration_date", { ascending: false }); // latest first
+    const { data } = await supabase.from("students").select("*");
 
-      if (error) throw error;
+    setStudents(data || []);
 
-      setData(students || []);
-    } catch (err) {
-      console.error(err.message);
-    } finally {
-      setLoading(false);
-    }
+    const total = data.length;
+    const active = data.filter((s) => s.status === "active").length;
+    const passed = data.filter((s) => s.status === "completed").length;
+
+    setStats({ total, active, passed });
   };
 
-  // 📊 STATS
-  const totalStudents = data.length;
-  const currentStudents = data.filter((s) => s.status !== "passed").length;
-  const passedStudents = data.filter((s) => s.status === "passed").length;
+  // 📊 Course Wise Data
+  const courseData = Object.values(
+    students.reduce((acc, s) => {
+      acc[s.course] = acc[s.course] || { name: s.course, value: 0 };
+      acc[s.course].value += 1;
+      return acc;
+    }, {})
+  );
 
-  // 🎓 COURSE COUNT
-  const courses = {};
-  data.forEach((s) => {
-    if (s.course) courses[s.course] = (courses[s.course] || 0) + 1;
-  });
+  // 👨‍🎓 Gender Data
+  const male = students.filter((s) => s.gender === "Male").length;
+  const female = students.filter((s) => s.gender === "Female").length;
 
-  // 🚻 GENDER
-  const male = data.filter((s) => s.gender === "Male").length;
-  const female = data.filter((s) => s.gender === "Female").length;
+  const genderData = [
+    { name: "Male", value: male },
+    { name: "Female", value: female },
+  ];
 
-  // 📤 EXPORT CSV
+  // ⏳ Pending Fees
+  const pendingStudents = students.filter((s) => s.pending_fee > 0);
+
+  // 🕒 Recent Students
+  const recentStudents = [...students]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 5);
+
+  // 📥 Export CSV
   const exportCSV = () => {
-    if (!data.length) return;
+    const headers = ["Name", "Course", "Mobile", "Status"];
+    const rows = students.map((s) => [
+      s.student_name,
+      s.course,
+      s.mobile,
+      s.status,
+    ]);
 
-    const headers = Object.keys(data[0]).join(",");
-    const rows = data
-      .map((s) =>
-        Object.values(s)
-          .map((v) => `"${v ?? ""}"`)
-          .join(",")
-      )
-      .join("\n");
+    let csv = headers.join(",") + "\n";
+    rows.forEach((row) => {
+      csv += row.join(",") + "\n";
+    });
 
-    const csv = headers + "\n" + rows;
     const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
 
@@ -238,107 +86,126 @@ const DashboardHome = () => {
     a.click();
   };
 
-  if (loading)
-    return (
-      <div className="text-center mt-10 text-gray-500">Loading dashboard...</div>
-    );
-
   return (
-    <div className="p-3 md:p-6 space-y-6 bg-gray-100 min-h-screen">
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       {/* HEADER */}
-      <div className="flex justify-between items-center flex-wrap gap-3">
-        <h2 className="text-lg md:text-2xl font-bold">Dashboard Overview</h2>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Dashboard Overview</h1>
 
         <button
           onClick={exportCSV}
-          className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm shadow"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow"
         >
           📥 Export CSV
         </button>
       </div>
 
-      {/* STATS CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        <Card title="Total Students" value={totalStudents} />
-        <Card title="Current" value={currentStudents} />
-        <Card title="Passed" value={passedStudents} />
+      {/* TOP CARDS */}
+      <div className="grid grid-cols-4 gap-4">
+        <Card title="Total Students" value={stats.total} />
+        <Card title="Current" value={stats.active} />
+        <Card title="Passed out" value={stats.passed} />
+        <Card title="Pending Fees" value={pendingStudents.length} />
       </div>
 
-      {/* COURSE SECTION */}
-      <Section title="Course Wise Students">
-        {Object.entries(courses).map(([course, count]) => (
-          <Row key={course} label={course} value={count} />
-        ))}
-      </Section>
+      {/* CHARTS */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* Course Chart */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Course Wise Students</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={courseData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* GENDER */}
-      <Section title="Gender Distribution">
-        <Row label="Male" value={male} />
-        <Row label="Female" value={female} />
-      </Section>
+        {/* Gender Chart */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h2 className="font-semibold mb-4">Gender Distribution</h2>
 
-      {/* RECENT STUDENTS */}
-      <div className="bg-white rounded-2xl shadow p-4 overflow-x-auto">
-        <h3 className="font-semibold mb-3 text-sm md:text-base">
-          Recent Students
-        </h3>
+          <div className="flex justify-center">
+            <PieChart width={300} height={300}>
+              <Pie
+                data={genderData}
+                dataKey="value"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {genderData.map((_, i) => (
+                  <Cell key={i} />
+                ))}
+              </Pie>
+            </PieChart>
+          </div>
 
-        <table className="min-w-full text-xs md:text-sm">
-          <thead>
-            <tr className="border-b text-gray-600">
-              <th className="text-left py-2">Name</th>
-              <th className="text-left py-2">Course</th>
-              <th className="text-left py-2">Mobile</th>
-              <th className="text-left py-2">Status</th>
-            </tr>
-          </thead>
+          <div className="flex justify-around mt-4">
+            <p>Male: {male}</p>
+            <p>Female: {female}</p>
+          </div>
+        </div>
+      </div>
 
-          <tbody>
-            {data.slice(0, 5).map((s) => (
-              <tr key={s.id} className="border-b hover:bg-gray-50">
-                <td className="py-2">{s.student_name}</td>
-                <td>{s.course}</td>
-                <td>{s.mobile}</td>
-                <td>
-                  <span
-                    className={`px-2 py-1 rounded text-white text-[10px] md:text-xs ${
-                      s.status === "passed" ? "bg-green-500" : "bg-yellow-500"
-                    }`}
-                  >
-                    {s.status || "active"}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* TABLES */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* Recent Students */}
+        <Table title="Recent Students" data={recentStudents} />
+
+        {/* Pending Fees */}
+        <Table title="Students with Pending Fees" data={pendingStudents} />
       </div>
     </div>
   );
-};
+}
 
-/* CARD COMPONENT */
+// 📦 CARD
 const Card = ({ title, value }) => (
-  <div className="bg-white rounded-2xl shadow p-4 flex flex-col items-center justify-center">
-    <p className="text-gray-500 text-xs md:text-sm">{title}</p>
-    <p className="text-lg md:text-2xl font-bold mt-1">{value}</p>
+  <div className="bg-white p-4 rounded-xl shadow text-center">
+    <h3 className="text-gray-500">{title}</h3>
+    <p className="text-2xl font-bold">{value}</p>
   </div>
 );
 
-/* SECTION */
-const Section = ({ title, children }) => (
-  <div className="bg-white rounded-2xl shadow p-4">
-    <h3 className="font-semibold mb-3 text-sm md:text-base">{title}</h3>
-    <div className="space-y-2">{children}</div>
+// 📋 TABLE
+const Table = ({ title, data }) => (
+  <div className="bg-white p-4 rounded-xl shadow">
+    <h2 className="font-semibold mb-4">{title}</h2>
+
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="text-left border-b">
+          <th>Name</th>
+          <th>Course</th>
+          <th>Mobile</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {data.map((s) => (
+          <tr key={s.id} className="border-b">
+            <td>{s.student_name}</td>
+            <td>{s.course}</td>
+            <td>{s.mobile}</td>
+            <td>
+              <span
+                className={`px-2 py-1 rounded text-white text-xs ${
+                  s.status === "active"
+                    ? "bg-green-500"
+                    : "bg-gray-500"
+                }`}
+              >
+                {s.status}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </div>
 );
-
-/* ROW */
-const Row = ({ label, value }) => (
-  <div className="flex justify-between text-xs md:text-sm border-b pb-1">
-    <span className="text-gray-600">{label}</span>
-    <span className="font-medium">{value}</span>
-  </div>
-);
-
-export default DashboardHome;

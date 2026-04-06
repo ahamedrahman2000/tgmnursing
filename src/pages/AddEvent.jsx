@@ -1,204 +1,3 @@
-// import { useEffect, useState } from "react";
-
-// const AddEvents = () => {
-//   const [events, setEvents] = useState([]);
-
-//   const [title, setTitle] = useState("");
-//   const [description, setDescription] = useState("");
-//   const [date, setDate] = useState("");
-//   const [image, setImage] = useState(null);
-
-//   const [editId, setEditId] = useState(null);
-
-//   const token = localStorage.getItem("token");
-
-//   // 🔄 FETCH EVENTS
-//   const fetchEvents = async () => {
-//     const res = await fetch("https://tgmnursing.onrender.com/api/gallery");
-//     const data = await res.json();
-//     setEvents(data || []);
-//   };
-
-//   useEffect(() => {
-//     fetchEvents();
-//   }, []);
-
-//   // ✅ ADD / UPDATE
-//   const handleSubmit = async () => {
-//     if (!title || !description || !date) {
-//       return alert("Fill all fields");
-//     }
-
-//     const formData = new FormData();
-//     formData.append("title", title);
-//     formData.append("description", description);
-//     formData.append("date", date);
-//     if (image) formData.append("image", image);
-
-//     const url = editId
-//       ? `https://tgmnursing.onrender.com/api/gallery/${editId}`
-//       : "https://tgmnursing.onrender.com/api/gallery/upload";
-
-//     const method = editId ? "PUT" : "POST";
-
-//     const res = await fetch(url, {
-//       method,
-//       headers: { Authorization: token },
-//       body: formData,
-//     });
-
-//     if (res.ok) {
-//       alert(editId ? "Updated ✅" : "Added ✅");
-
-//       setTitle("");
-//       setDescription("");
-//       setDate("");
-//       setImage(null);
-//       setEditId(null);
-
-//       fetchEvents();
-//     } else {
-//       alert("Error ❌");
-//     }
-//   };
-
-//   // ✏️ EDIT
-//   const handleEdit = (e) => {
-//     setEditId(e.id);
-//     setTitle(e.title);
-//     setDescription(e.description);
-//     setDate(e.date?.split("T")[0] || "");
-//   };
-
-//   // 🗑 DELETE
-//   // const handleDelete = async (id) => {
-//   //   if (!window.confirm("Delete this event?")) return;
-
-//   //   const res = await fetch(
-//   //     `https://tgmnursing.onrender.com/api/gallery/${id}`,
-//   //     {
-//   //       method: "DELETE",
-//   //       headers: {
-//   //         Authorization: `Bearer ${token}`,
-//   //       },
-//   //     },
-//   //   );
-
-//   //   if (res.ok) {
-//   //     alert("Deleted ✅");
-//   //     fetchEvents();
-//   //   } else {
-//   //     alert("Delete failed ❌");
-//   //   }
-//   // };
-//   const handleDelete = async (id) => {
-//     if (!window.confirm("Delete Event?")) return;
-
-//     const res = await fetch(
-//       `https://tgmnursing.onrender.com/api/gallery/${id}`,
-//       {
-//         method: "DELETE",
-//       },
-//     );
-
-//     if (res.ok) {
-//       alert("Deleted ✅");
-//       fetchEvents();
-//     } else {
-//       alert("Delete failed ❌");
-//     }
-//   };
-
-//   return (
-//     <div className="p-4 md:p-6">
-//       {/* 🧾 FORM */}
-//       <div className="bg-white p-6 rounded shadow max-w-xl mb-6">
-//         <h2 className="text-xl font-bold mb-4">
-//           {editId ? "Edit Event" : "Add Event"}
-//         </h2>
-
-//         <input
-//           placeholder="Title"
-//           value={title}
-//           onChange={(e) => setTitle(e.target.value)}
-//           className="w-full border p-2 mb-3 rounded"
-//         />
-
-//         <input
-//           type="date"
-//           value={date}
-//           onChange={(e) => setDate(e.target.value)}
-//           className="w-full border p-2 mb-3 rounded"
-//         />
-
-//         <textarea
-//           placeholder="Description"
-//           value={description}
-//           onChange={(e) => setDescription(e.target.value)}
-//           className="w-full border p-2 mb-3 rounded"
-//         />
-
-//         <input
-//           type="file"
-//           onChange={(e) => setImage(e.target.files[0])}
-//           className="mb-3"
-//         />
-
-//         <button
-//           onClick={handleSubmit}
-//           className="bg-blue-600 text-white px-4 py-2 rounded"
-//         >
-//           {editId ? "Update" : "Submit"}
-//         </button>
-//       </div>
-
-//       {/* 📋 EVENTS LIST */}
-//       <div className="bg-white p-4 rounded shadow">
-//         <h2 className="font-bold mb-4">All Events</h2>
-
-//         <div className="space-y-3 max-h-[400px] overflow-y-auto">
-//           {events.map((e) => (
-//             <div
-//               key={e.id}
-//               className="flex items-center gap-3 p-2 border rounded"
-//             >
-//               <img
-//                 src={e.image_url}
-//                 className="w-16 h-16 object-cover rounded"
-//               />
-
-//               <div className="flex-1">
-//                 <p className="font-semibold text-sm">{e.title}</p>
-//                 <p className="text-xs text-gray-500">
-//                   {new Date(e.date).toLocaleDateString()}
-//                 </p>
-//               </div>
-
-//               {/* ✏️ EDIT */}
-//               <button
-//                 onClick={() => handleEdit(e)}
-//                 className="text-blue-600 text-sm"
-//               >
-//                 Edit
-//               </button>
-
-//               {/* 🗑 DELETE */}
-//               <button
-//                 onClick={() => handleDelete(e.id)}
-//                 className="text-red-600 text-sm"
-//               >
-//                 Delete
-//               </button>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AddEvents;
-
 import { useEffect, useState } from "react";
 import { supabase } from "../config/supabaseClient";
 
@@ -206,79 +5,93 @@ const AddEvents = () => {
   const [events, setEvents] = useState([]);
 
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState("");
 
   const [editId, setEditId] = useState(null);
 
-  // 🔄 FETCH EVENTS
+  // 📥 FETCH EVENTS
   const fetchEvents = async () => {
     const { data, error } = await supabase
       .from("gallery")
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error) setEvents(data || []);
+    if (error) {
+      console.error("Fetch error:", error.message);
+    } else {
+      setEvents(data || []);
+    }
   };
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  // ✅ ADD / UPDATE
+  // 🖼 IMAGE PREVIEW
+  const handleImage = (file) => {
+    if (!file) return;
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  // 📤 UPLOAD IMAGE
+  const uploadImage = async () => {
+    if (!image) return null;
+
+    // 🔥 FIX: remove spaces
+    const fileName = `${Date.now()}-${image.name.replace(/\s/g, "")}`;
+
+    const { error } = await supabase.storage
+      .from("gallery")
+      .upload(fileName, image, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Upload error:", error);
+      alert("Upload failed");
+      return null;
+    }
+
+    const { data } = supabase.storage.from("gallery").getPublicUrl(fileName);
+
+    return data.publicUrl;
+  };
+
+  // 💾 SUBMIT / UPDATE
   const handleSubmit = async () => {
-    if (!title || !description || !date) {
-      return alert("Fill all fields");
-    }
+    let imageUrl = preview;
 
-    let imageUrl = null;
-
-    // 📸 Upload image (only if new image selected)
+    // 🔷 Upload new image only if selected
     if (image) {
-      const fileName = `${Date.now()}-${image.name}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("gallery")
-        .upload(fileName, image);
-
-      if (uploadError) {
-        alert("Image upload failed");
-        return;
-      }
-
-      const { data } = supabase.storage
-        .from("gallery")
-        .getPublicUrl(fileName);
-
-      imageUrl = data.publicUrl;
+      imageUrl = await uploadImage();
+      if (!imageUrl) return;
     }
 
-    // ✏️ UPDATE
     if (editId) {
-      const updateData = {
-        title,
-        description,
-        date,
-      };
-
-      // if new image uploaded → update image too
-      if (imageUrl) {
-        updateData.image_url = imageUrl;
-      }
-
+      // ✏️ UPDATE
       const { error } = await supabase
         .from("gallery")
-        .update(updateData)
+        .update({
+          title,
+          description,
+          date,
+          image_url: imageUrl,
+        })
         .eq("id", editId);
 
       if (error) {
-        alert("Update failed ❌");
+        console.error("Update error:", error.message);
       } else {
-        alert("Updated ✅");
+        alert("Event updated");
       }
     } else {
-      // ➕ ADD
+      // ➕ INSERT
       const { error } = await supabase.from("gallery").insert([
         {
           title,
@@ -289,127 +102,160 @@ const AddEvents = () => {
       ]);
 
       if (error) {
-        alert("Error ❌");
+        console.error("Insert error:", error.message);
       } else {
-        alert("Added ✅");
+        alert("Event added");
       }
     }
 
-    // reset form
-    setTitle("");
-    setDescription("");
-    setDate("");
-    setImage(null);
-    setEditId(null);
-
-    fetchEvents();
+    resetForm();
+    fetchEvents(); // 🔥 refresh list
   };
 
   // ✏️ EDIT
   const handleEdit = (e) => {
-    setEditId(e.id);
     setTitle(e.title);
+    setDate(e.date || "");
     setDescription(e.description);
-    setDate(e.date?.split("T")[0] || "");
+    setPreview(e.image_url);
+    setImage(null);
+    setEditId(e.id);
   };
 
   // 🗑 DELETE
-  const handleDelete = async (item) => {
-    if (!window.confirm("Delete Event?")) return;
+  const handleDelete = async (e) => {
+    if (!window.confirm("Delete this event?")) return;
 
-    // remove from storage
-    if (item.image_url) {
-      const fileName = item.image_url.split("/").pop();
-      await supabase.storage.from("gallery").remove([fileName]);
+    const { error } = await supabase.from("gallery").delete().eq("id", e.id);
+
+    if (error) {
+      console.error("Delete error:", error.message);
+    } else {
+      fetchEvents();
     }
+  };
 
-    // remove from DB
-    await supabase.from("gallery").delete().eq("id", item.id);
-
-    alert("Deleted ✅");
-    fetchEvents();
+  // 🔄 RESET
+  const resetForm = () => {
+    setTitle("");
+    setDate("");
+    setDescription("");
+    setImage(null);
+    setPreview("");
+    setEditId(null);
   };
 
   return (
-    <div className="p-4 md:p-6">
+    <div>
       {/* 🧾 FORM */}
-      <div className="bg-white p-6 rounded shadow max-w-xl mb-6">
-        <h2 className="text-xl font-bold mb-4">
-          {editId ? "Edit Event" : "Add Event"}
+      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-lg max-w-7xl mb-6">
+        <h2 className="text-lg md:text-xl font-bold mb-4">
+          {editId ? "✏️ Edit Event" : "➕ Add Event"}
         </h2>
 
-        <input
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full border p-2 mb-3 rounded"
-        />
+        <div className="grid gap-3">
+          <input
+            placeholder="Event Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="input text-sm md:text-base py-2 md:py-3"
+          />
 
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full border p-2 mb-3 rounded"
-        />
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="input text-sm md:text-base py-2 md:py-3"
+          />
 
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full border p-2 mb-3 rounded"
-        />
+          <textarea
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="input text-sm md:text-base py-2 md:py-3"
+          />
 
-        <input
-          type="file"
-          onChange={(e) => setImage(e.target.files[0])}
-          className="mb-3"
-        />
+          {/* IMAGE */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleImage(e.target.files[0])}
+            className="text-sm"
+          />
 
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {editId ? "Update" : "Submit"}
-        </button>
+          {/* PREVIEW */}
+          {preview && (
+            <img
+              src={preview}
+              alt="preview"
+              className="w-full h-32 md:h-48 object-cover rounded-lg border"
+            />
+          )}
+
+          {/* BUTTONS */}
+          <div className="flex gap-3">
+            <button
+              onClick={handleSubmit}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-5 py-2 rounded-lg text-sm md:text-base"
+            >
+              {editId ? "Update" : "Submit"}
+            </button>
+
+            {editId && (
+              <button
+                onClick={resetForm}
+                className="bg-gray-400 text-white px-3 md:px-5 py-2 rounded-lg text-sm md:text-base"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* 📋 EVENTS LIST */}
-      <div className="bg-white p-4 rounded shadow">
-        <h2 className="font-bold mb-4">All Events</h2>
+      <div className="bg-white p-4 rounded-2xl shadow-lg">
+        <h2 className="font-bold mb-4 text-sm md:text-base">📋 All Events</h2>
 
-        <div className="space-y-3 max-h-[400px] overflow-y-auto">
+        <div className="grid md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto">
           {events.map((e) => (
             <div
               key={e.id}
-              className="flex items-center gap-3 p-2 border rounded"
+              className="flex flex-col md:flex-row gap-2 md:gap-3 p-2 md:p-3 border rounded-xl hover:shadow"
             >
               <img
                 src={e.image_url}
-                className="w-16 h-16 object-cover rounded"
+                alt=""
+                className="w-full md:w-24 h-32 md:h-20 object-cover rounded-lg"
               />
 
               <div className="flex-1">
-                <p className="font-semibold text-sm">{e.title}</p>
+                <p className="font-semibold text-sm md:text-base">{e.title}</p>
+
                 <p className="text-xs text-gray-500">
-                  {new Date(e.date).toLocaleDateString()}
+                  {e.date ? new Date(e.date).toLocaleDateString() : "No date"}
+                </p>
+
+                <p className="text-xs md:text-sm line-clamp-2">
+                  {e.description}
                 </p>
               </div>
 
-              {/* ✏️ EDIT */}
-              <button
-                onClick={() => handleEdit(e)}
-                className="text-blue-600 text-sm"
-              >
-                Edit
-              </button>
+              <div className="flex md:flex-col gap-3 md:gap-2 justify-end">
+                <button
+                  onClick={() => handleEdit(e)}
+                  className="text-blue-600 text-sm"
+                >
+                  ✏️
+                </button>
 
-              {/* 🗑 DELETE */}
-              <button
-                onClick={() => handleDelete(e)}
-                className="text-red-600 text-sm"
-              >
-                Delete
-              </button>
+                <button
+                  onClick={() => handleDelete(e)}
+                  className="text-red-600 text-sm"
+                >
+                  🗑
+                </button>
+              </div>
             </div>
           ))}
         </div>

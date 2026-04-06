@@ -12,12 +12,13 @@ import { AdmissionForm } from "./pages/AdmissionForm";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Events } from "./pages/Events";
-import GalleryPage from "./pages/GalleryPage";
-import StudentList from "./pages/StudentsList";
+import GalleryPage from "./pages/GalleryPage"; 
 import CashflowDashboard from "./pages/CashflowDashboard";
 import AboutUs from "./pages/AboutUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import CoursesPage from "./pages/CoursesPage";
+import StudentList from "./pages/StudentList";
 
 function App() {
   return (
@@ -47,6 +48,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CashflowDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coursepage"
+          element={
+            <ProtectedRoute>
+              <CoursesPage />
             </ProtectedRoute>
           }
         />

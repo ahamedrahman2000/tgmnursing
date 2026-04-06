@@ -1,12 +1,13 @@
 import  { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
-import AddEvents from "./AddEvent"; 
-import AddStudents from "./AddStudent";
-import StudentsList from "./StudentsList";
+import AddEvents from "./AddEvent";  
 import DashboardHome from "./DashboardHome";
 import { supabase } from "../config/supabaseClient";
 import { AddVideos } from "./AddVideo";
 import CashflowDashboard from "./CashflowDashboard";
+import StudentList from "./StudentList";
+import StudentForm from "./StudentForm";
+import CoursesPage from "./CoursesPage";
 const AdminDashboard = () => {
   const [active, setActive] = useState("dashboard");
   const navigate = useNavigate();
@@ -32,7 +33,8 @@ const logout = async () => {
       <button onClick={() => setActive("videos")} className="menu-btn">Add Videos</button>
       <button onClick={() => setActive("add-student")} className="menu-btn">Register Student</button>
       <button onClick={() => setActive("students")} className="menu-btn">All Students</button>
-      <button onClick={() => setActive("cashflow")} className="menu-btn">Cash Flow</button>
+      <button onClick={() => setActive("courses")} className="menu-btn">All Courses</button>
+      <button onClick={() => setActive("cashflow")} className="menu-btn">Management</button>
     </div>
 
     <button
@@ -48,8 +50,9 @@ const logout = async () => {
     {active === "dashboard" && <DashboardHome />}
     {active === "events" && <AddEvents />}
     {active === "videos" && <AddVideos />}
-    {active === "add-student" && <AddStudents />}
-    {active === "students" && <StudentsList />}
+    {active === "add-student" && <StudentForm />}
+    {active === "students" && <StudentList />}
+    {active === "courses" && <CoursesPage />}
     {active === "cashflow" && <CashflowDashboard />}
   </div>
 

@@ -1,288 +1,245 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../config/supabaseClient";
-import { Bar } from "react-chartjs-2";
-import jsPDF from "jspdf";
-import "chart.js/auto";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  CartesianGrid,
+} from "recharts";
 
-const CashflowDashboard = () => {
+const MoneyDashboard = () => {
   const [students, setStudents] = useState([]);
-  const [search, setSearch] = useState("");
 
-  // ✅ FETCH STUDENTS
-  const fetchStudents = async () => {
-    const { data, error } = await supabase
-      .from("students")
-      .select("*")
-      .order("registration_date", { ascending: false });
-    if (error) console.error(error);
-    else setStudents(data || []);
+  const [totals, setTotals] = useState({
+    total: 0,
+    paid: 0,
+    pending: 0,
+  });
+
+  const [courseData, setCourseData] = useState([]);
+  const [yearData, setYearData] = useState([]);
+  const [pendingStudents, setPendingStudents] = useState([]);
+
+  // 📥 FETCH DATA
+  const fetchData = async () => {
+    const { data } = await supabase.from("students").select("*");
+
+    if (!data) return;
+
+    setStudents(data);
+
+    let total = 0,
+      paid = 0,
+      pending = 0;
+
+    const courseMap = {};
+    const yearMap = {};
+    const pendingList = [];
+
+    data.forEach((s) => {
+      const t = Number(s.total_fee || 0);
+      const p = Number(s.paid_fee || 0);
+      const pend = Number(s.pending_fee || 0);
+
+      total += t;
+      paid += p;
+      pending += pend;
+
+      // 📊 COURSE
+      if (!courseMap[s.course]) {
+        courseMap[s.course] = {
+          course: s.course,
+          students: 0,
+          paid: 0,
+          pending: 0,
+        };
+      }
+
+      courseMap[s.course].students += 1;
+      courseMap[s.course].paid += p;
+      courseMap[s.course].pending += pend;
+
+      // 📈 YEAR
+      if (!yearMap[s.academic_year]) {
+        yearMap[s.academic_year] = {
+          year: s.academic_year,
+          paid: 0,
+          pending: 0,
+        };
+      }
+
+      yearMap[s.academic_year].paid += p;
+      yearMap[s.academic_year].pending += pend;
+
+      // ⚠️ PENDING LIST
+      if (pend > 0) {
+        pendingList.push({
+          name: s.student_name,
+          course: s.course,
+          pending: pend,
+        });
+      }
+    });
+
+    setTotals({ total, paid, pending });
+
+    setCourseData(Object.values(courseMap));
+
+    setYearData(
+      Object.values(yearMap).map((y) => ({
+        ...y,
+        profit: y.paid, // you can adjust later
+      }))
+    );
+
+    setPendingStudents(pendingList);
   };
 
   useEffect(() => {
-    fetchStudents();
+    fetchData();
   }, []);
 
-  // 🔹 FILTERED STUDENTS
-  const filteredStudents = students.filter((s) =>
-    s.student_name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // 🔹 TOTALS
-  const totalStudents = filteredStudents.length;
-  const totalFeeExpected = filteredStudents.reduce(
-    (sum, s) => sum + Number(s.total_fee || 0),
-    0
-  );
-  const totalFeePaid = filteredStudents.reduce(
-    (sum, s) => sum + Number(s.paid_fee || 0),
-    0
-  );
-  const totalFeePending = filteredStudents.reduce(
-    (sum, s) => sum + Number(s.pending_fee || 0),
-    0
-  );
-
-  // 🔹 COURSE SUMMARY
-  const courseSummary = filteredStudents.reduce((acc, s) => {
-    if (!acc[s.course])
-      acc[s.course] = { count: 0, total: 0, paid: 0, pending: 0 };
-    acc[s.course].count += 1;
-    acc[s.course].total += Number(s.total_fee || 0);
-    acc[s.course].paid += Number(s.paid_fee || 0);
-    acc[s.course].pending += Number(s.pending_fee || 0);
-    return acc;
-  }, {});
-
-  // 🔹 YEARLY SUMMARY
-  const yearlySummary = filteredStudents.reduce((acc, s) => {
-    const year = new Date(s.registration_date).getFullYear();
-    if (!acc[year]) acc[year] = { total: 0, paid: 0, pending: 0, profit: 0 };
-    acc[year].total += Number(s.total_fee || 0);
-    acc[year].paid += Number(s.paid_fee || 0);
-    acc[year].pending += Number(s.pending_fee || 0);
-    acc[year].profit = acc[year].paid; // profit = collected fees
-    return acc;
-  }, {});
-
-  // 🔹 CHART DATA
-  const courseLabels = Object.keys(courseSummary);
-  const coursePaidData = Object.values(courseSummary).map((c) => c.paid);
-  const coursePendingData = Object.values(courseSummary).map((c) => c.pending);
-  const yearLabels = Object.keys(yearlySummary);
-  const yearProfitData = Object.values(yearlySummary).map((y) => y.profit);
-
-  // 🔹 STUDENT-WISE PENDING
-  const pendingStudents = filteredStudents.filter((s) => s.pending_fee > 0);
-
-  // 🔹 PDF EXPORT
-  const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("TGM Nursing Institute Cashflow Report", 105, 20, { align: "center" });
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
-
-    let y = 40;
-
-    // Overall totals
-    doc.setFontSize(12);
-    doc.text("Overall Totals", 14, y);
-    y += 6;
-    doc.setFontSize(10);
-    doc.text(`Total Students: ${totalStudents}`, 14, y);
-    y += 6;
-    doc.text(`Total Fees Expected: ₹${totalFeeExpected}`, 14, y);
-    y += 6;
-    doc.text(`Total Fees Paid: ₹${totalFeePaid}`, 14, y);
-    y += 6;
-    doc.text(`Total Pending Fees: ₹${totalFeePending}`, 14, y);
-    y += 10;
-
-    // Course-wise summary
-    doc.setFontSize(12);
-    doc.text("Course-wise Summary", 14, y);
-    y += 6;
-    doc.setFontSize(10);
-    Object.entries(courseSummary).forEach(([course, val]) => {
-      doc.text(
-        `${course} | Students: ${val.count} | Paid: ₹${val.paid} | Pending: ₹${val.pending}`,
-        14,
-        y
-      );
-      y += 6;
-      if (y > 280) { doc.addPage(); y = 20; }
-    });
-
-    // Year-wise summary
-    y += 6;
-    doc.setFontSize(12);
-    doc.text("Year-wise Summary", 14, y);
-    y += 6;
-    doc.setFontSize(10);
-    Object.entries(yearlySummary).forEach(([year, val]) => {
-      doc.text(
-        `${year} | Collected: ₹${val.paid} | Pending: ₹${val.pending} | Profit: ₹${val.profit}`,
-        14,
-        y
-      );
-      y += 6;
-      if (y > 280) { doc.addPage(); y = 20; }
-    });
-
-    // Student-wise pending
-    y += 6;
-    doc.setFontSize(12);
-    doc.text("Student-wise Pending Fees", 14, y);
-    y += 6;
-    doc.setFontSize(10);
-    pendingStudents.forEach((s) => {
-      doc.text(`${s.student_name} | ${s.course} | Pending: ₹${s.pending_fee}`, 14, y);
-      y += 6;
-      if (y > 280) { doc.addPage(); y = 20; }
-    });
-
-    doc.save("Cashflow_Full_Report.pdf");
-  };
-
   return (
-    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">💰 Cashflow Dashboard</h2>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="text-2xl font-bold mb-6">💰 Money Dashboard</h2>
 
-      {/* SEARCH */}
-      <input
-        placeholder="Search student..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="input mb-4"
-      />
-
-      {/* SUMMARY CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow text-center">
-          <p className="text-sm text-gray-500">Total Students</p>
-          <p className="text-lg font-bold">{totalStudents}</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow text-center">
-          <p className="text-sm text-gray-500">Total Fees</p>
-          <p className="text-lg font-bold">₹{totalFeeExpected}</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow text-center">
-          <p className="text-sm text-gray-500">Paid Fees</p>
-          <p className="text-lg font-bold">₹{totalFeePaid}</p>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow text-center">
-          <p className="text-sm text-gray-500">Pending Fees</p>
-          <p className="text-lg font-bold text-red-500">₹{totalFeePending}</p>
-        </div>
+      {/* 🔷 TOP CARDS */}
+      <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <Card title="Total Fees" value={totals.total} color="blue" />
+        <Card title="Paid Fees" value={totals.paid} color="green" />
+        <Card title="Pending Fees" value={totals.pending} color="red" />
       </div>
 
-      {/* CHARTS */}
+      {/* 📊 CHARTS */}
       <div className="grid md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="font-bold mb-2">Course-wise Pending Fees</h3>
-          <Bar
-            data={{
-              labels: courseLabels,
-              datasets: [
-                { label: "Paid", data: coursePaidData, backgroundColor: "#22c55e" },
-                { label: "Pending", data: coursePendingData, backgroundColor: "#ef4444" },
-              ],
-            }}
-          />
+        {/* COURSE PENDING */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h3 className="font-semibold mb-3">Course-wise Pending Fees</h3>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={courseData}>
+              <XAxis dataKey="course" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="pending" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="font-bold mb-2">Year-wise Profit</h3>
-          <Bar
-            data={{
-              labels: yearLabels,
-              datasets: [{ label: "Profit", data: yearProfitData, backgroundColor: "#3b82f6" }],
-            }}
-          />
+        {/* YEAR PROFIT */}
+        <div className="bg-white p-4 rounded-xl shadow">
+          <h3 className="font-semibold mb-3">Year-wise Profit</h3>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={yearData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="year" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="profit" />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* COURSE-WISE TABLE */}
-      <div className="overflow-auto bg-white rounded-xl shadow p-4 mb-6">
-        <h3 className="font-bold mb-2">Course-wise Summary</h3>
-        <table className="w-full text-sm border">
-          <thead className="bg-blue-50 text-gray-700">
-            <tr>
-              <th className="p-2 border">Course</th>
-              <th className="p-2 border">Students</th>
-              <th className="p-2 border">Paid</th>
-              <th className="p-2 border">Pending</th>
+      {/* 📋 COURSE TABLE */}
+      <div className="bg-white p-4 rounded-xl shadow mb-6">
+        <h3 className="font-semibold mb-3">Course-wise Summary</h3>
+
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-gray-100">
+              <th>Course</th>
+              <th>Students</th>
+              <th>Paid</th>
+              <th>Pending</th>
             </tr>
           </thead>
           <tbody>
-            {Object.entries(courseSummary).map(([course, val]) => (
-              <tr key={course} className="border-t hover:bg-gray-50">
-                <td className="p-2 border">{course}</td>
-                <td className="p-2 border">{val.count}</td>
-                <td className="p-2 border">₹{val.paid}</td>
-                <td className="p-2 border text-red-500">₹{val.pending}</td>
+            {courseData.map((c, i) => (
+              <tr key={i} className="border-t">
+                <td>{c.course}</td>
+                <td>{c.students}</td>
+                <td className="text-green-600">₹{c.paid}</td>
+                <td className="text-red-500">₹{c.pending}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* YEAR-WISE TABLE */}
-      <div className="overflow-auto bg-white rounded-xl shadow p-4 mb-6">
-        <h3 className="font-bold mb-2">Year-wise Summary</h3>
-        <table className="w-full text-sm border">
-          <thead className="bg-blue-50 text-gray-700">
-            <tr>
-              <th className="p-2 border">Year</th>
-              <th className="p-2 border">Collected Fees</th>
-              <th className="p-2 border">Pending Fees</th>
-              <th className="p-2 border">Profit</th>
+      {/* 📋 YEAR TABLE */}
+      <div className="bg-white p-4 rounded-xl shadow mb-6">
+        <h3 className="font-semibold mb-3">Year-wise Summary</h3>
+
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-gray-100">
+              <th>Year</th>
+              <th>Collected</th>
+              <th>Pending</th>
+              <th>Profit</th>
             </tr>
           </thead>
           <tbody>
-            {Object.entries(yearlySummary).map(([year, val]) => (
-              <tr key={year} className="border-t hover:bg-gray-50">
-                <td className="p-2 border">{year}</td>
-                <td className="p-2 border">₹{val.paid}</td>
-                <td className="p-2 border text-red-500">₹{val.pending}</td>
-                <td className="p-2 border">₹{val.profit}</td>
+            {yearData.map((y, i) => (
+              <tr key={i} className="border-t">
+                <td>{y.year}</td>
+                <td className="text-green-600">₹{y.paid}</td>
+                <td className="text-red-500">₹{y.pending}</td>
+                <td className="text-blue-600">₹{y.profit}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* STUDENT-WISE PENDING */}
-      <div className="overflow-auto bg-white rounded-xl shadow p-4 mb-6">
-        <h3 className="font-bold mb-2">Student-wise Pending Fees</h3>
-        <table className="w-full text-sm border">
-          <thead className="bg-blue-50 text-gray-700">
-            <tr>
-              <th className="p-2 border">Student Name</th>
-              <th className="p-2 border">Course</th>
-              <th className="p-2 border">Pending Fee</th>
+      {/* ⚠️ PENDING STUDENTS */}
+      <div className="bg-white p-4 rounded-xl shadow">
+        <h3 className="font-semibold mb-3">Student-wise Pending Fees</h3>
+
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-gray-100">
+              <th>Name</th>
+              <th>Course</th>
+              <th>Pending Fee</th>
             </tr>
           </thead>
           <tbody>
-            {pendingStudents.map((s) => (
-              <tr key={s.id} className="border-t hover:bg-gray-50">
-                <td className="p-2 border">{s.student_name}</td>
-                <td className="p-2 border">{s.course}</td>
-                <td className="p-2 border text-red-500">₹{s.pending_fee}</td>
+            {pendingStudents.map((s, i) => (
+              <tr key={i} className="border-t">
+                <td>{s.name}</td>
+                <td>{s.course}</td>
+                <td className="text-red-500">₹{s.pending}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <button
-        onClick={exportPDF}
-        className="bg-green-600 text-white px-4 py-2 rounded-lg"
-      >
-        Export Full PDF
-      </button>
     </div>
   );
 };
 
-export default CashflowDashboard;
+// 🔷 CARD COMPONENT
+const Card = ({ title, value, color }) => {
+  const colors = {
+    blue: "bg-blue-100 text-blue-700",
+    green: "bg-green-100 text-green-700",
+    red: "bg-red-100 text-red-700",
+  };
+
+  return (
+    <div className={`p-4 rounded-xl shadow ${colors[color]}`}>
+      <p className="text-sm">{title}</p>
+      <h2 className="text-2xl font-bold mt-2">₹{value}</h2>
+    </div>
+  );
+};
+
+export default MoneyDashboard;
