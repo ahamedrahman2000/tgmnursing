@@ -148,12 +148,12 @@ const AddEvents = () => {
   return (
     <div>
       {/* 🧾 FORM */}
-      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-lg max-w-7xl mb-6">
+      <div className="bg-white   md:p-6 rounded-2xl shadow-lg max-w-7xl mb-6">
         <h2 className="text-lg md:text-xl font-bold mb-4">
           {editId ? "✏️ Edit Event" : "➕ Add Event"}
         </h2>
 
-        <div className="grid gap-3">
+        <div className="grid gap-3 p-1">
           <input
             placeholder="Event Title"
             value={title}

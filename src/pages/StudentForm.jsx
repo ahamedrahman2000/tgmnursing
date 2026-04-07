@@ -89,7 +89,7 @@ const StudentForm = () => {
   };
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow mb-6">
+    <div className=" rounded-xl shadow mb-6">
       <h2 className="font-bold mb-4 text-lg">➕ Register Student</h2>
 
       {/* GRID FORM */}

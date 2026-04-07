@@ -69,7 +69,7 @@ const CoursesPage = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="  bg-gray-50 min-h-screen">
       <h2 className="text-2xl font-bold mb-4">📘 Manage Courses</h2>
 
       {/* FORM */}
@@ -99,7 +99,7 @@ const CoursesPage = () => {
 
         <button
           type="submit"
-          className={`text-white rounded px-4 ${
+          className={`text-white rounded px-4 py-2 ${
             editId ? "bg-yellow-500" : "bg-blue-600"
           }`}
         >

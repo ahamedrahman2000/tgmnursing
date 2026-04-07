@@ -12,6 +12,7 @@ import { AdmissionForm } from "./AdmissionForm"; // import AdmissionForm
 import Footer from "./Footer";
 import SEO from "./SEO";
 import AboutUs from "./AboutUs";
+import CoursesHorizontal from "./CoursesHorizontal";
 
 const Home = ({ setPage }) => {
   const [showAdmissionForm, setShowAdmissionForm] = useState(false);
@@ -41,19 +42,15 @@ const Home = ({ setPage }) => {
               goToAdmission={() => setShowAdmissionForm(true)}
             />
 
-            {/* 📦 Main Container */}
             <div>
-              {/* 📊 Stats */}
-
               <Stats />
               <AboutUs />
-              {/* 📰 Events + Videos */}
+              <CoursesHorizontal />
+
               <section id="facilities">
                 <AdmissionSection />
               </section>
               <Events />
-
-              {/* 📚 Facilities + Benefits */}
 
               <Achievements />
 

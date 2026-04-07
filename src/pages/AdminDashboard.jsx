@@ -1,100 +1,169 @@
-import  { useState } from "react"; 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AddEvents from "./AddEvent";  
-import DashboardHome from "./DashboardHome";
 import { supabase } from "../config/supabaseClient";
+import { motion, AnimatePresence } from "framer-motion";
+
+import AddEvents from "./AddEvent";
+import DashboardHome from "./DashboardHome";
 import { AddVideos } from "./AddVideo";
 import CashflowDashboard from "./CashflowDashboard";
 import StudentList from "./StudentList";
 import StudentForm from "./StudentForm";
 import CoursesPage from "./CoursesPage";
+
+const menuItems = [
+  { key: "dashboard", label: "Dashboard", icon: "📊" },
+  { key: "events", label: "Events", icon: "📅" },
+  { key: "videos", label: "Videos", icon: "🎥" },
+  { key: "add-student", label: "Register", icon: "➕" },
+  { key: "students", label: "Students", icon: "👩‍🎓" },
+  { key: "courses", label: "Courses", icon: "📚" },
+  { key: "cashflow", label: "Management", icon: "💰" },
+];
+
 const AdminDashboard = () => {
   const [active, setActive] = useState("dashboard");
+  const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
 
-const logout = async () => {
-  await supabase.auth.signOut(); // logout from supabase
-  localStorage.removeItem("supabase_session");
-  navigate("/admin-login");
-};
+  const logout = async () => {
+    await supabase.auth.signOut();
+    navigate("/admin-login");
+  };
+
+  // ✅ First 4 for bottom nav
+  const mainMobile = menuItems.slice(0, 4);
+
+  // ✅ Remaining for "More"
+  const moreMobile = menuItems.slice(4);
 
   return (
-   <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
 
-  {/* 🔵 DESKTOP SIDEBAR */}
-  <div className="hidden md:block w-64 bg-white shadow-lg p-4">
-    <h2 className="text-xl font-bold text-blue-700 mb-6">
-      Admin Panel
-    </h2>
+      {/* 🔵 DESKTOP SIDEBAR */}
+      <div className="hidden md:flex flex-col w-64 bg-white/80 backdrop-blur-xl shadow-xl p-5 border-r">
+        <h2 className="text-2xl font-bold text-blue-700 mb-8">Admin Panel</h2>
 
-    <div className="space-y-3">
-      <button onClick={() => setActive("dashboard")} className="menu-btn">  Dashboard </button>
-      <button onClick={() => setActive("events")} className="menu-btn">Add Events</button>
-      <button onClick={() => setActive("videos")} className="menu-btn">Add Videos</button>
-      <button onClick={() => setActive("add-student")} className="menu-btn">Register Student</button>
-      <button onClick={() => setActive("students")} className="menu-btn">All Students</button>
-      <button onClick={() => setActive("courses")} className="menu-btn">All Courses</button>
-      <button onClick={() => setActive("cashflow")} className="menu-btn">Management</button>
+        <div className="space-y-2 flex-1">
+          {menuItems.map((item) => (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              key={item.key}
+              onClick={() => setActive(item.key)}
+              className={`flex items-center gap-3 w-full px-4 py-2 rounded-xl transition
+                ${
+                  active === item.key
+                    ? "bg-blue-600 text-white shadow-lg"
+                    : "hover:bg-blue-50 text-gray-700"
+                }`}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </motion.button>
+          ))}
+        </div>
+
+        <button
+          onClick={logout}
+          className="mt-6 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* 🟢 MAIN */}
+      <div className="flex-1 flex flex-col pb-24 md:pb-6">
+        <div className="p-4 md:p-6">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-lg p-4 md:p-6 min-h-[80vh]"
+          >
+            {active === "dashboard" && <DashboardHome />}
+            {active === "events" && <AddEvents />}
+            {active === "videos" && <AddVideos />}
+            {active === "add-student" && <StudentForm />}
+            {active === "students" && <StudentList />}
+            {active === "courses" && <CoursesPage />}
+            {active === "cashflow" && <CashflowDashboard />}
+          </motion.div>
+        </div>
+      </div>
+
+      {/* 📱 MOBILE BOTTOM NAV */}
+      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[95%] bg-white/90 backdrop-blur-xl shadow-xl border rounded-2xl flex justify-around items-center py-2 md:hidden">
+
+        {/* 4 MAIN ICONS */}
+        {mainMobile.map((item) => (
+          <button
+            key={item.key}
+            onClick={() => {
+              setActive(item.key);
+              setShowMore(false);
+            }}
+            className={`flex flex-col items-center text-xs px-2 py-1 rounded-lg
+              ${
+                active === item.key
+                  ? "text-blue-600 font-semibold"
+                  : "text-gray-600"
+              }`}
+          >
+            <span className="text-lg">{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
+
+        {/* MORE BUTTON */}
+        <button
+          onClick={() => setShowMore(!showMore)}
+          className="flex flex-col items-center text-xs px-2 py-1 text-gray-600"
+        >
+          ⋯
+          <span>More</span>
+        </button>
+      </div>
+
+      {/* 🔥 FLOATING MORE MENU */}
+      <AnimatePresence>
+        {showMore && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 w-[50%] bg-white rounded-2xl shadow-xl p-4 md:hidden"
+          >
+            <div className="grid grid-cols-1 gap-4 text-center">
+
+              {moreMobile.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => {
+                    setActive(item.key);
+                    setShowMore(false);
+                  }}
+                  className="flex flex-col items-center text-sm text-gray-700"
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+
+              {/* Logout */}
+              <button
+                onClick={logout}
+                className="flex flex-col items-center text-sm text-red-500"
+              >
+                🚪
+                <span>Logout</span>
+              </button>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
-
-    <button
-      onClick={logout}
-      className="mt-10 w-full bg-red-500 text-white py-2 rounded"
-    >
-      Logout
-    </button>
-  </div>
-
-  {/* 🟢 CONTENT */}
-  <div className="flex-1 p-4 md:p-6 pb-20 md:pb-6">
-    {active === "dashboard" && <DashboardHome />}
-    {active === "events" && <AddEvents />}
-    {active === "videos" && <AddVideos />}
-    {active === "add-student" && <StudentForm />}
-    {active === "students" && <StudentList />}
-    {active === "courses" && <CoursesPage />}
-    {active === "cashflow" && <CashflowDashboard />}
-  </div>
-
-  {/* 📱 MOBILE BOTTOM NAV */}
-  <div className="fixed bottom-0 left-0 right-0 bg-white shadow-inner border-t flex justify-around items-center py-2 md:hidden">
-<button onClick={() => setActive("dashboard")} className="flex flex-col items-center text-xs">
-  📊
-  <span>Home</span>
-</button>
-    <button onClick={() => setActive("events")} className="flex flex-col items-center text-xs">
-      📅
-      <span>Events</span>
-    </button>
-
-    <button onClick={() => setActive("videos")} className="flex flex-col items-center text-xs">
-      🎥
-      <span>Videos</span>
-    </button>
-
-    <button onClick={() => setActive("add-student")} className="flex flex-col items-center text-xs">
-      ➕
-      <span>Add</span>
-    </button>
-
-    <button onClick={() => setActive("students")} className="flex flex-col items-center text-xs">
-      👩‍🎓
-      <span>Students</span>
-    </button>
-
-    <button onClick={() => setActive("cashflow")} className="flex flex-col items-center text-xs">
-      👩‍🎓
-      <span>Students</span>
-    </button>
-
-    <button onClick={logout} className="flex flex-col items-center text-xs text-red-500">
-      🚪
-      <span>Logout</span>
-    </button>
-
-  </div>
-
-</div>
   );
 };
 

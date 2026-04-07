@@ -110,7 +110,7 @@ const Footer = () => {
   
           <div className="flex gap-4 mt-4 text-2xl">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/tgmnursing/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:scale-110 transition-transform"

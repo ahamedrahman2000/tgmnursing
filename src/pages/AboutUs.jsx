@@ -1,4 +1,4 @@
-import React from "react";
+ 
 import aboutImg from "../assets/images/Group1.jpeg"; // Your image
 
 const AboutUs = () => {
@@ -9,7 +9,15 @@ const AboutUs = () => {
       </h1>
 
       <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
-        {/* Left Content */}
+      
+         <div className="md:w-1/2 flex justify-center">
+          <img
+            src={aboutImg}
+            alt="TGM Nursing Institute"
+            className="rounded-2xl shadow-xl w-full object-cover max-h-[500px] md:max-h-[400px]"
+          />
+        </div>
+
         <div className="md:w-1/2 space-y-4 text-gray-700 text-sm md:text-base leading-relaxed">
           <p>
             Welcome to{" "}
@@ -38,14 +46,8 @@ const AboutUs = () => {
           </p>
         </div>
 
-        {/* Right Image */}
-        <div className="md:w-1/2 flex justify-center">
-          <img
-            src={aboutImg}
-            alt="TGM Nursing Institute"
-            className="rounded-2xl shadow-xl w-full object-cover max-h-[500px] md:max-h-[400px]"
-          />
-        </div>
+        
+       
       </div>
     </div>
   );

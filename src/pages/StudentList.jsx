@@ -46,7 +46,7 @@ const StudentList = () => {
     // SEARCH
     if (search) {
       query = query.or(
-        `student_name.ilike.%${search}%,mobile.ilike.%${search}%,admission_no.ilike.%${search}%`
+        `student_name.ilike.%${search}%,mobile.ilike.%${search}%,admission_no.ilike.%${search}%`,
       );
     }
 
@@ -82,8 +82,19 @@ const StudentList = () => {
   };
 
   // 🔄 STATUS
+  // const toggleStatus = async (student) => {
+  //   const newStatus = student.status === "active" ? "inactive" : "active";
+
+  //   await supabase
+  //     .from("students")
+  //     .update({ status: newStatus })
+  //     .eq("id", student.id);
+
+  //   fetchStudents();
+  // };
+
   const toggleStatus = async (student) => {
-    const newStatus = student.status === "active" ? "inactive" : "active";
+    const newStatus = student.status === "active" ? "completed" : "active";
 
     await supabase
       .from("students")
@@ -303,26 +314,24 @@ Date of Birth (as per record): ${student.dob}.
   };
 
   return (
-    <div  >
+    <div>
       <h2 className="text-2xl font-bold mb-4">🎓 Students</h2>
 
-      <div className="bg-white p-4 rounded-xl shadow mb-4 space-y-3">
+      <div className="bg-white   sm:p-4 rounded-xl shadow mb-4 space-y-3">
         {/* ROW 1 */}
-        <div className="grid   md:grid-cols-5 gap-3">
-          {/* SEARCH */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3">
           <input
             type="text"
-            placeholder="🔍 Search name / mobile / admission"
+            placeholder="🔍 Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="input"
+            className="input text-sm p-2"
           />
 
-          {/* COURSE */}
           <select
             value={course}
             onChange={(e) => setCourse(e.target.value)}
-            className="input"
+            className="input text-sm p-2"
           >
             <option value="">All Courses</option>
             {courses.map((c) => (
@@ -332,11 +341,10 @@ Date of Birth (as per record): ${student.dob}.
             ))}
           </select>
 
-          {/* YEAR */}
           <select
             value={year}
             onChange={(e) => setYear(e.target.value)}
-            className="input"
+            className="input text-sm p-2"
           >
             <option value="">All Years</option>
             {[2023, 2024, 2025, 2026].map((y) => (
@@ -344,22 +352,20 @@ Date of Birth (as per record): ${student.dob}.
             ))}
           </select>
 
-          {/* STATUS */}
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="input"
+            className="input text-sm p-2"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
 
-          {/* FEE */}
           <select
             value={feeFilter}
             onChange={(e) => setFeeFilter(e.target.value)}
-            className="input"
+            className="input text-sm p-2"
           >
             <option value="">All Fees</option>
             <option value="paid">Paid</option>
@@ -368,22 +374,20 @@ Date of Birth (as per record): ${student.dob}.
         </div>
 
         {/* ROW 2 */}
-        <div className="grid md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
           <input
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="input"
+            className="input text-sm p-2"
           />
-
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="input"
+            className="input text-sm p-2"
           />
 
-          {/* RESET */}
           <button
             onClick={() => {
               setSearch("");
@@ -394,7 +398,7 @@ Date of Birth (as per record): ${student.dob}.
               setFromDate("");
               setToDate("");
             }}
-            className="bg-red-500 text-white rounded px-3"
+            className="bg-red-500 text-white rounded px-3 py-2 text-sm"
           >
             ❌ Reset
           </button>
@@ -403,99 +407,92 @@ Date of Birth (as per record): ${student.dob}.
 
       {/* TABLE */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-blue-50">
-            <tr>
-              <th className="p-3">S.No</th>
-              <th>Admission</th>
-              <th>Name</th>
-              <th>Course</th>
-              <th>Mobile</th>
-              <th>Fees</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs sm:text-sm min-w-[800px]">
+            <thead className="bg-blue-50 text-xs sm:text-sm">
+              <tr>
+                <th className="p-2">S.No</th>
+                <th>Adm</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Mobile</th>
+                <th>Fees</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {students.map((s, index) => (
-              <tr key={s.id} className="border-t hover:bg-gray-50">
-                <td className="p-3">{(page - 1) * limit + index + 1}</td>
+            <tbody>
+              {students.map((s, index) => (
+                <tr key={s.id} className="border-t hover:bg-gray-50">
+                  <td className="p-2">{(page - 1) * limit + index + 1}</td>
+                  <td>{s.admission_no}</td>
+                  <td>{s.student_name}</td>
+                  <td>{s.course}</td>
+                  <td>{s.mobile}</td>
 
-                <td>{s.admission_no}</td>
-                <td>{s.student_name}</td>
-                <td>{s.course}</td>
-                <td>{s.mobile}</td>
-
-                {/* 💰 FEES */}
-                <td>
-                  <div>
+                  {/* FEES */}
+                  <td className="text-xs">
                     ₹{s.paid_fee || 0} / ₹{s.total_fee || 0}
                     {Number(s.pending_fee) > 0 ? (
-                      <p className="text-red-500 text-xs">
-                        Pending ₹{s.pending_fee}
-                      </p>
+                      <p className="text-red-500">₹{s.pending_fee}</p>
                     ) : (
-                      <p className="text-green-600 text-xs">Paid ✓</p>
+                      <p className="text-green-600">✓</p>
                     )}
-                  </div>
-                </td>
+                  </td>
 
-                {/* STATUS */}
-                <td>
-                  <span
-                    onClick={() => toggleStatus(s)}
-                    className={`cursor-pointer px-3 py-1 rounded-full text-xs ${
-                      s.status === "active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    {s.status}
-                  </span>
-                </td>
-
-                {/* ACTIONS */}
-                <td>
-                  <div className="flex gap-3 justify-center text-lg">
-                    <FaEye
-                      className="text-blue-600 cursor-pointer"
-                      onClick={() => {
-                        setSelected(s);
-                        setEditMode(false);
-                      }}
-                    />
-
-                    <FaFilePdf
-                      className="text-green-600 cursor-pointer"
-                      onClick={() => generatePDF(s)}
-                    />
-
-                    <span
-                      className="cursor-pointer"
-                      onClick={() => generateBonafidePDF(s)}
+                  {/* STATUS */}
+                  <td>
+                    <span onClick={() => toggleStatus(s)}
+                      className={`px-2 py-1 rounded text-white text-xs ${
+                        s.status === "active"
+                          ? "bg-green-500"
+                          : s.status === "completed"
+                            ? "bg-blue-500"
+                            : "bg-gray-500"
+                      }`}
                     >
-                      📄
+                      {s.status === "completed" ? "Passed Out" : s.status}
                     </span>
+                  </td>
 
-                    <FaEdit
-                      className="text-yellow-500 cursor-pointer"
-                      onClick={() => {
-                        setSelected(s);
-                        setEditMode(true);
-                      }}
-                    />
+                  {/* ACTIONS */}
+                  <td>
+                    <div className="flex gap-2 justify-center text-sm sm:text-lg">
+                      <FaEye
+                        className="text-blue-600 cursor-pointer"
+                        onClick={() => {
+                          setSelected(s);
+                          setEditMode(false);
+                        }}
+                      />
 
-                    <FaTrash
-                      className="text-red-500 cursor-pointer"
-                      onClick={() => handleDelete(s.id)}
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      <FaFilePdf
+                        className="text-green-600 cursor-pointer"
+                        onClick={() => generatePDF(s)}
+                      />
+
+                      <span onClick={() => generateBonafidePDF(s)}>📄</span>
+
+                      <FaEdit
+                        className="text-yellow-500 cursor-pointer"
+                        onClick={() => {
+                          setSelected(s);
+                          setEditMode(true);
+                        }}
+                      />
+
+                      <FaTrash
+                        className="text-red-500 cursor-pointer"
+                        onClick={() => handleDelete(s.id)}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* PAGINATION */}
