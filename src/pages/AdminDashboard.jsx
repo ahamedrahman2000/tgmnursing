@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../config/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,7 +11,7 @@ import StudentList from "./StudentList";
 import StudentForm from "./StudentForm";
 import CoursesPage from "./CoursesPage";
 
-const menuItems = [
+const allMenuItems = [
   { key: "dashboard", label: "Dashboard", icon: "📊" },
   { key: "events", label: "Events", icon: "📅" },
   { key: "videos", label: "Videos", icon: "🎥" },
@@ -24,6 +24,7 @@ const menuItems = [
 const AdminDashboard = () => {
   const [active, setActive] = useState("dashboard");
   const [showMore, setShowMore] = useState(false);
+  const [role, setRole] = useState(null);
   const navigate = useNavigate();
 
   const logout = async () => {
@@ -31,10 +32,35 @@ const AdminDashboard = () => {
     navigate("/admin-login");
   };
 
-  // ✅ First 4 for bottom nav
-  const mainMobile = menuItems.slice(0, 4);
+  // ✅ Fetch user role
+  useEffect(() => {
+    const getUserRole = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  // ✅ Remaining for "More"
+      if (user) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+        setRole(data?.role);
+      }
+    };
+
+    getUserRole();
+  }, []);
+
+  // ✅ FIX: define menuItems AFTER role
+  const menuItems =
+    role === "admin"
+      ? allMenuItems
+      : allMenuItems.filter((item) => item.key !== "cashflow");
+
+  // ✅ Mobile split
+  const mainMobile = menuItems.slice(0, 4);
   const moreMobile = menuItems.slice(4);
 
   return (
@@ -86,7 +112,7 @@ const AdminDashboard = () => {
             {active === "add-student" && <StudentForm />}
             {active === "students" && <StudentList />}
             {active === "courses" && <CoursesPage />}
-            {active === "cashflow" && <CashflowDashboard />}
+            {active === "cashflow" && role === "admin" && <CashflowDashboard />}
           </motion.div>
         </div>
       </div>
@@ -94,7 +120,6 @@ const AdminDashboard = () => {
       {/* 📱 MOBILE BOTTOM NAV */}
       <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[95%] bg-white/90 backdrop-blur-xl shadow-xl border rounded-2xl flex justify-around items-center py-2 md:hidden">
 
-        {/* 4 MAIN ICONS */}
         {mainMobile.map((item) => (
           <button
             key={item.key}
@@ -114,7 +139,6 @@ const AdminDashboard = () => {
           </button>
         ))}
 
-        {/* MORE BUTTON */}
         <button
           onClick={() => setShowMore(!showMore)}
           className="flex flex-col items-center text-xs px-2 py-1 text-gray-600"
@@ -124,7 +148,7 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* 🔥 FLOATING MORE MENU */}
+      {/* 🔥 FLOATING MENU */}
       <AnimatePresence>
         {showMore && (
           <motion.div
@@ -149,7 +173,6 @@ const AdminDashboard = () => {
                 </button>
               ))}
 
-              {/* Logout */}
               <button
                 onClick={logout}
                 className="flex flex-col items-center text-sm text-red-500"

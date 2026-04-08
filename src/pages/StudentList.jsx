@@ -76,10 +76,12 @@ const StudentList = () => {
   }, [page, year, search, course, status, feeFilter, fromDate, toDate]);
 
   // ❌ DELETE
-  const handleDelete = async (id) => {
-    await supabase.from("students").delete().eq("id", id);
-    fetchStudents();
-  };
+ const handleDelete = async (id) => {
+  if (!window.confirm("⚠️ This action cannot be undone. Delete student?")) return;
+
+  await supabase.from("students").delete().eq("id", id);
+  fetchStudents();
+};
 
   // 🔄 STATUS
   // const toggleStatus = async (student) => {
@@ -472,7 +474,7 @@ Date of Birth (as per record): ${student.dob}.
                         onClick={() => generatePDF(s)}
                       />
 
-                      <span onClick={() => generateBonafidePDF(s)}>📄</span>
+                      <span className="  cursor-pointer" onClick={() => generateBonafidePDF(s)}>📄</span>
 
                       <FaEdit
                         className="text-yellow-500 cursor-pointer"
