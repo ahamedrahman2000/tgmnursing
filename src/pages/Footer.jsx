@@ -172,13 +172,13 @@ const Footer = () => {
             © {new Date().getFullYear()} TGM Nursing Institute
           </p>
           <a
-            href="https://google.com"
+            href="https://elitecodesolutions.netlify.app/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-300 hover:text-white transition"
           >
             Developed by{" "}
-            <span className="font-semibold text-white">EliteCode Academy</span>
+            <span className="font-semibold text-white">EliteCode Solutions</span>
           </a>
         </div>
       </div>
